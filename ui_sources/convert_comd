@@ -1,1 +1,1 @@
-pyside6-uic ./ui_sources/main_window.ui -o ./UI/main_window.py
+pyside6-uic ./ui_sources/main_window.ui -o ./designer_UI/main_window.py
