@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         self.products_frame.hide()
         self.leads_frame.show()
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
