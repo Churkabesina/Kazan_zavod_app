@@ -15,21 +15,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QTableView, QVBoxLayout, QWidget)
 
 class Ui_products_frame(object):
     def setupUi(self, products_frame):
         if not products_frame.objectName():
             products_frame.setObjectName(u"products_frame")
-        products_frame.resize(1354, 735)
+        products_frame.resize(1361, 735)
         self.verticalLayout_2 = QVBoxLayout(products_frame)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.frame_layout = QVBoxLayout()
-        self.frame_layout.setSpacing(0)
+        self.frame_layout.setSpacing(6)
         self.frame_layout.setObjectName(u"frame_layout")
         self.frame_layout.setContentsMargins(-1, 0, -1, 0)
         self.back_and_name_layout = QHBoxLayout()
@@ -127,32 +127,34 @@ class Ui_products_frame(object):
 
         self.frame_layout.addLayout(self.labels_layout)
 
-        self.scrollArea = QScrollArea(products_frame)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1350, 511))
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.products_temp_table = QTableView(products_frame)
+        self.products_temp_table.setObjectName(u"products_temp_table")
 
-        self.frame_layout.addWidget(self.scrollArea)
+        self.frame_layout.addWidget(self.products_temp_table)
 
         self.buttons_layout = QHBoxLayout()
         self.buttons_layout.setSpacing(0)
         self.buttons_layout.setObjectName(u"buttons_layout")
-        self.add_product_frame_button = QPushButton(products_frame)
-        self.add_product_frame_button.setObjectName(u"add_product_frame_button")
-        sizePolicy.setHeightForWidth(self.add_product_frame_button.sizePolicy().hasHeightForWidth())
-        self.add_product_frame_button.setSizePolicy(sizePolicy)
+        self.add_product_button = QPushButton(products_frame)
+        self.add_product_button.setObjectName(u"add_product_button")
+        sizePolicy.setHeightForWidth(self.add_product_button.sizePolicy().hasHeightForWidth())
+        self.add_product_button.setSizePolicy(sizePolicy)
 
-        self.buttons_layout.addWidget(self.add_product_frame_button)
+        self.buttons_layout.addWidget(self.add_product_button)
 
-        self.clear_product_frames_button = QPushButton(products_frame)
-        self.clear_product_frames_button.setObjectName(u"clear_product_frames_button")
-        sizePolicy.setHeightForWidth(self.clear_product_frames_button.sizePolicy().hasHeightForWidth())
-        self.clear_product_frames_button.setSizePolicy(sizePolicy)
+        self.del_product_button = QPushButton(products_frame)
+        self.del_product_button.setObjectName(u"del_product_button")
+        sizePolicy.setHeightForWidth(self.del_product_button.sizePolicy().hasHeightForWidth())
+        self.del_product_button.setSizePolicy(sizePolicy)
 
-        self.buttons_layout.addWidget(self.clear_product_frames_button)
+        self.buttons_layout.addWidget(self.del_product_button)
+
+        self.clear_product_button = QPushButton(products_frame)
+        self.clear_product_button.setObjectName(u"clear_product_button")
+        sizePolicy.setHeightForWidth(self.clear_product_button.sizePolicy().hasHeightForWidth())
+        self.clear_product_button.setSizePolicy(sizePolicy)
+
+        self.buttons_layout.addWidget(self.clear_product_button)
 
         self.products_db_button = QPushButton(products_frame)
         self.products_db_button.setObjectName(u"products_db_button")
@@ -162,8 +164,8 @@ class Ui_products_frame(object):
         self.buttons_layout.addWidget(self.products_db_button)
 
         self.buttons_layout.setStretch(0, 3)
-        self.buttons_layout.setStretch(1, 3)
         self.buttons_layout.setStretch(2, 3)
+        self.buttons_layout.setStretch(3, 3)
 
         self.frame_layout.addLayout(self.buttons_layout)
 
@@ -178,6 +180,13 @@ class Ui_products_frame(object):
         self.pdf_products_button.setMaximumSize(QSize(16777215, 100))
 
         self.pdf_layout.addWidget(self.pdf_products_button)
+
+        self.pushButton = QPushButton(products_frame)
+        self.pushButton.setObjectName(u"pushButton")
+        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
+        self.pushButton.setSizePolicy(sizePolicy)
+
+        self.pdf_layout.addWidget(self.pushButton)
 
         self.pdf_layout.setStretch(0, 6)
 
@@ -209,9 +218,11 @@ class Ui_products_frame(object):
         self.lenght_label.setText(QCoreApplication.translate("products_frame", u"\u0414\u041b\u0418\u041d\u0410, \u041c\u041c", None))
         self.weight_label.setText(QCoreApplication.translate("products_frame", u"\u041e\u0411\u0429\u0418\u0419 \u0412\u0415\u0421(\u041a\u0413)", None))
         self.draw_label.setText(QCoreApplication.translate("products_frame", u"\u0427\u0415\u0420\u0422\u0415\u0416", None))
-        self.add_product_frame_button.setText(QCoreApplication.translate("products_frame", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
-        self.clear_product_frames_button.setText(QCoreApplication.translate("products_frame", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
+        self.add_product_button.setText(QCoreApplication.translate("products_frame", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
+        self.del_product_button.setText(QCoreApplication.translate("products_frame", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c", None))
+        self.clear_product_button.setText(QCoreApplication.translate("products_frame", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
         self.products_db_button.setText(QCoreApplication.translate("products_frame", u"\u0411\u0430\u0437\u0430 \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u0438", None))
         self.pdf_products_button.setText(QCoreApplication.translate("products_frame", u"\u0412\u044b\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044e \u0432 PDF", None))
+        self.pushButton.setText(QCoreApplication.translate("products_frame", u"\u0412 \u0441\u0447\u0435\u0442\u0430", None))
     # retranslateUi
 

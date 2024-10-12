@@ -181,7 +181,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTableView" name="tableView"/>
+      <widget class="QTableView" name="products_temp_table"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="buttons_layout" stretch="3,0,3,3">
