@@ -1,7 +1,10 @@
 import sys
+from backend.cfg_loader import load_cfg
+from backend.db_loader import load_db
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 
+from backend.db_loader import load_db
 from designer_UI.main_window_ui import Ui_main_window
 from UI.products_frame import ProductsFrame
 from UI.leads_frame import LeadsFrame
@@ -26,7 +29,9 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    cfg = load_cfg()
     app = QApplication(sys.argv)
+    db = load_db(cfg['PATHS']['db_path'])
     main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec())
