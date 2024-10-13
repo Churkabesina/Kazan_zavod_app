@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, QStringListModel, Slot
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, QStringListModel, Slot, QTimer
 from PySide6.QtWidgets import QFrame, QHeaderView, QComboBox, QCompleter, QStyledItemDelegate, QItemDelegate
 from designer_UI.products_frame_ui import Ui_products_frame
 
@@ -31,10 +31,43 @@ class ProductsFrame(QFrame):
         self.ui.products_temp_table.setItemDelegateForColumn(0, self.delegate)
 
         self.ui.add_product_button.clicked.connect(self.add_button_click_slot)
+        self.ui.del_product_button.clicked.connect(self.delete_selected_row_slot)
+
+        self.ui.products_temp_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.products_temp_table.customContextMenuRequested.connect(self.handle_right_click_slot)
+
+        self.ui.products_temp_table.clicked.connect(self.handle_fist_cell_click_slot)
+
+        self.ui.clear_product_button.clicked.connect(self.delete_all_rows_slot)
 
     @Slot()
     def add_button_click_slot(self):
         self.table_model.insertRows(self.table_model.rowCount(), 1)
+
+    @Slot()
+    def delete_all_rows_slot(self):
+        self.table_model.removeRows(0, self.table_model.rowCount())
+
+    @Slot()
+    def delete_selected_row_slot(self):
+        selected_indexes = self.ui.products_temp_table.selectedIndexes()
+        if selected_indexes:
+            rows = sorted({index.row() for index in selected_indexes})
+            for row in reversed(rows):
+                self.table_model.removeRows(row, 1)
+
+    @Slot()
+    def handle_right_click_slot(self, pos):
+        index = self.ui.products_temp_table.indexAt(pos)
+        if index.isValid():
+            self.table_model.removeRows(index.row(), 1)
+
+
+    @Slot(QModelIndex)
+    def handle_fist_cell_click_slot(self, index):
+        if index.column() == 0:
+            self.ui.products_temp_table.edit(index)
+
 
 # переписать в "попроще" rowcount и т.тд
 class TableModel(QAbstractTableModel):
@@ -67,14 +100,15 @@ class TableModel(QAbstractTableModel):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def insertRows(self, row, count, parent=QModelIndex()):
-        self.beginInsertRows(parent, row, row + count - 1)  # Уведомляем о начале добавления
-
-        # Добавляем данные для новой строки в self._data
+        self.beginInsertRows(parent, row, row + count - 1)
         self._data.insert(row, ['','','','','','','',''])
-
-        self.endInsertRows()  # Уведомляем об окончании добавления
-        self.layoutChanged.emit()  # Уведомляем об изменении структуры
+        self.endInsertRows()
         return True
+
+    def removeRows(self, row, count, parent=QModelIndex()):
+        self.beginRemoveRows(parent, row, row + count - 1)
+        del self._data[row:row + count]
+        self.endRemoveRows()
 
 
 class ComboBoxDelegate(QStyledItemDelegate):
@@ -86,22 +120,17 @@ class ComboBoxDelegate(QStyledItemDelegate):
         editor = QComboBox(parent)
         editor.setEditable(True)
         editor.addItems(self.items)
-        editor.currentIndexChanged.connect(self.commitAndCloseEditor)
+        editor.currentIndexChanged.connect(self.commit_and_close_editor)
         return editor
 
     def setEditorData(self, editor, index):
         editor.setCurrentText('')
-        # value = index.model().data(index, Qt.EditRole)
-        # if value in self.items:
-        #     editor.setCurrentIndex(self.items.index(value))
-        # else:
-        #     editor.setCurrentText(value)
 
     def setModelData(self, editor, model, index):
         value = editor.currentText()
         model.setData(index, value, Qt.EditRole)
 
-    def commitAndCloseEditor(self):
+    def commit_and_close_editor(self):
         editor = self.sender()
         self.commitData.emit(editor)
         self.closeEditor.emit(editor)
