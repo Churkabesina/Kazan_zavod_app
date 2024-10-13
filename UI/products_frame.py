@@ -30,9 +30,11 @@ class ProductsFrame(QFrame):
         # Устанавливаем делегат только для первого столбца
         self.ui.products_temp_table.setItemDelegateForColumn(0, self.delegate)
 
+        self.ui.add_product_button.clicked.connect(self.add_button_click_slot)
+
     @Slot()
     def add_button_click_slot(self):
-        self.model.insertRows(model.rowCount(), 1)
+        self.table_model.insertRows(self.table_model.rowCount(), 1)
 
 # переписать в "попроще" rowcount и т.тд
 class TableModel(QAbstractTableModel):
@@ -64,15 +66,15 @@ class TableModel(QAbstractTableModel):
             return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    # def insertRows(self, row, count, parent=QModelIndex()):
-    #     self.beginInsertRows(parent, row, row + count - 1)  # Уведомляем о начале добавления
-    #
-    #     # Добавляем данные для новой строки в self._data
-    #     self._data.insert(row, ["Новая ячейка 1", "Новая ячейка 2"])
-    #
-    #     self.endInsertRows()  # Уведомляем об окончании добавления
-    #     self.layoutChanged.emit()  # Уведомляем об изменении структуры
-    #     return True
+    def insertRows(self, row, count, parent=QModelIndex()):
+        self.beginInsertRows(parent, row, row + count - 1)  # Уведомляем о начале добавления
+
+        # Добавляем данные для новой строки в self._data
+        self._data.insert(row, ['','','','','','','',''])
+
+        self.endInsertRows()  # Уведомляем об окончании добавления
+        self.layoutChanged.emit()  # Уведомляем об изменении структуры
+        return True
 
 
 class ComboBoxDelegate(QStyledItemDelegate):
