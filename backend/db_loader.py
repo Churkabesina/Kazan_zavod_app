@@ -14,20 +14,28 @@ def load_db(db_path: str):
             sys.exit(1)
 
         query = QtSql.QSqlQuery()
-        sql_table_1 = '''CREATE TABLE IF NOT EXISTS products_one (
+        ##### временная продукция на выгрузку в счета
+        sql_table_temp_products = '''CREATE TABLE IF NOT EXISTS temp_products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, product TEXT, count INTEGER, type_metal TEXT, mark_steel TEXT, diameter TEXT, lenght REAL, weight REAL, draw TEXT)'''
+        ##### база продукции
+        sql_table_products = '''CREATE TABLE IF NOT EXISTS products_two (
         id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
-        sql_table_2 = '''CREATE TABLE IF NOT EXISTS products_two (
+        ##### склад
+        sql_table_storage = '''CREATE TABLE IF NOT EXISTS products_three (
         id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
-        sql_table_3 = '''CREATE TABLE IF NOT EXISTS products_three (
+        ##### счета
+        sql_table_deals = '''CREATE TABLE IF NOT EXISTS products_four (
         id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
-        sql_table_4 = '''CREATE TABLE IF NOT EXISTS products_four (
+        ##### главный экран
+        sql_table_leads = '''CREATE TABLE IF NOT EXISTS products_four (
         id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
-        # sqllite не умеет в много запросность
-        sql_executor(query, sql_table_1)
-        sql_executor(query, sql_table_2)
-        sql_executor(query, sql_table_3)
-        sql_executor(query, sql_table_4)
 
+        # sqllite не умеет в много запросность
+        sql_executor(query, sql_table_temp_products)
+        sql_executor(query, sql_table_products)
+        sql_executor(query, sql_table_storage)
+        sql_executor(query, sql_table_deals)
+        sql_executor(query, sql_table_leads)
         conn.close()
 
     # Подключение к базе данных
