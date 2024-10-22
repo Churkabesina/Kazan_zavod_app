@@ -184,7 +184,7 @@
       <widget class="QTableView" name="products_temp_table"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="buttons_layout" stretch="3,0,3,3">
+      <layout class="QHBoxLayout" name="buttons_layout" stretch="0,0,0,0">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -243,7 +243,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="pdf_layout" stretch="6,0">
+      <layout class="QHBoxLayout" name="pdf_layout" stretch="5,5">
        <property name="spacing">
         <number>0</number>
        </property>

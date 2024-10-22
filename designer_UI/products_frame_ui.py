@@ -163,9 +163,6 @@ class Ui_products_frame(object):
 
         self.buttons_layout.addWidget(self.products_db_button)
 
-        self.buttons_layout.setStretch(0, 3)
-        self.buttons_layout.setStretch(2, 3)
-        self.buttons_layout.setStretch(3, 3)
 
         self.frame_layout.addLayout(self.buttons_layout)
 
@@ -188,7 +185,8 @@ class Ui_products_frame(object):
 
         self.pdf_layout.addWidget(self.pushButton)
 
-        self.pdf_layout.setStretch(0, 6)
+        self.pdf_layout.setStretch(0, 5)
+        self.pdf_layout.setStretch(1, 5)
 
         self.frame_layout.addLayout(self.pdf_layout)
 

@@ -82,7 +82,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="labels_layout" stretch="2,2,2,2,2,2">
+      <layout class="QHBoxLayout" name="labels_layout" stretch="0,0,0,0,0,0,0">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -133,6 +133,16 @@
         <widget class="QLabel" name="lenght_label">
          <property name="text">
           <string>ДЛИНА, ММ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="mass_label">
+         <property name="text">
+          <string>МАССА</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

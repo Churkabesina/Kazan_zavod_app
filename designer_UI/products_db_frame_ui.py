@@ -98,18 +98,18 @@ class Ui_products_db_frame(object):
 
         self.labels_layout.addWidget(self.lenght_label)
 
+        self.mass_label = QLabel(products_db_frame)
+        self.mass_label.setObjectName(u"mass_label")
+        self.mass_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.mass_label)
+
         self.draw_label = QLabel(products_db_frame)
         self.draw_label.setObjectName(u"draw_label")
         self.draw_label.setAlignment(Qt.AlignCenter)
 
         self.labels_layout.addWidget(self.draw_label)
 
-        self.labels_layout.setStretch(0, 2)
-        self.labels_layout.setStretch(1, 2)
-        self.labels_layout.setStretch(2, 2)
-        self.labels_layout.setStretch(3, 2)
-        self.labels_layout.setStretch(4, 2)
-        self.labels_layout.setStretch(5, 2)
 
         self.frame_layout.addLayout(self.labels_layout)
 
@@ -187,6 +187,7 @@ class Ui_products_db_frame(object):
         self.balance_kg_label.setText(QCoreApplication.translate("products_db_frame", u"\u041c\u0410\u0420\u041a\u0410 \u0421\u0422\u0410\u041b\u0418", None))
         self.balance_mm_label.setText(QCoreApplication.translate("products_db_frame", u"\u0414\u0418\u0410\u041c\u0415\u0422\u0420, \u041c\u041c", None))
         self.lenght_label.setText(QCoreApplication.translate("products_db_frame", u"\u0414\u041b\u0418\u041d\u0410, \u041c\u041c", None))
+        self.mass_label.setText(QCoreApplication.translate("products_db_frame", u"\u041c\u0410\u0421\u0421\u0410", None))
         self.draw_label.setText(QCoreApplication.translate("products_db_frame", u"\u0427\u0415\u0420\u0422\u0415\u0416", None))
         self.in_storage_button.setText(QCoreApplication.translate("products_db_frame", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044e", None))
         self.out_storage_button.setText(QCoreApplication.translate("products_db_frame", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044e", None))

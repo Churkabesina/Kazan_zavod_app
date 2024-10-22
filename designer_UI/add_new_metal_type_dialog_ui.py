@@ -23,7 +23,7 @@ class Ui_add_new_metal_type_dialog(object):
     def setupUi(self, add_new_metal_type_dialog):
         if not add_new_metal_type_dialog.objectName():
             add_new_metal_type_dialog.setObjectName(u"add_new_metal_type_dialog")
-        add_new_metal_type_dialog.resize(580, 156)
+        add_new_metal_type_dialog.resize(580, 150)
         self.verticalLayout = QVBoxLayout(add_new_metal_type_dialog)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
