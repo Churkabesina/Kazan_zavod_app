@@ -10,9 +10,15 @@ class LeadsFrame(QFrame):
         self.ui = Ui_leads_frame()
         self.ui.setupUi(self)
 
-        self.ui.products_button.clicked.connect(self.blabla)
+        # Коннектор кнопок к функциям
+        self.ui.products_button.clicked.connect(self.open_products_frame_button_slot)
+        self.ui.storage_button.clicked.connect(self.open_storage_frame_button_slot)
 
 
-    def blabla(self):
-        self.main_window.leads_frame.hide()
+    def open_products_frame_button_slot(self):
+        self.hide()
         self.main_window.products_frame.show()
+    
+    def open_storage_frame_button_slot(self):
+        self.hide()
+        self.main_window.storage_frame.show()

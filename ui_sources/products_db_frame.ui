@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>storage_frame</class>
- <widget class="QFrame" name="storage_frame">
+ <class>products_db_frame</class>
+ <widget class="QFrame" name="products_db_frame">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="frame_layout" stretch="1,1,14,2,2">
      <property name="spacing">
-      <number>6</number>
+      <number>0</number>
      </property>
      <property name="topMargin">
       <number>0</number>
@@ -59,7 +59,7 @@
        <item>
         <widget class="QLabel" name="frame_name_label">
          <property name="text">
-          <string>Склад</string>
+          <string>База продукции</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -82,11 +82,17 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="labels_layout" stretch="2,2,2,2">
+      <layout class="QHBoxLayout" name="labels_layout" stretch="2,2,2,2,2,2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="type_metall_label_2">
          <property name="text">
-          <string>Вид металла</string>
+          <string>ПРОДУКЦИЯ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -96,7 +102,7 @@
        <item>
         <widget class="QLabel" name="size_mm_label">
          <property name="text">
-          <string>Размер, мм</string>
+          <string>ТИП МЕТАЛЛА</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -106,7 +112,7 @@
        <item>
         <widget class="QLabel" name="balance_kg_label">
          <property name="text">
-          <string>Остаток, кг | шт</string>
+          <string>МАРКА СТАЛИ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -116,7 +122,27 @@
        <item>
         <widget class="QLabel" name="balance_mm_label">
          <property name="text">
-          <string>Остаток, мм</string>
+          <string>ДИАМЕТР, ММ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lenght_label">
+         <property name="text">
+          <string>ДЛИНА, ММ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="draw_label">
+         <property name="text">
+          <string>ЧЕРТЕЖ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -142,7 +168,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>+</string>
+          <string>Добавить продукцию</string>
          </property>
         </widget>
        </item>
@@ -155,19 +181,19 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>-</string>
+          <string>Удалить продукцию</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="pdf_layout" stretch="6">
+      <layout class="QHBoxLayout" name="pdf_layout" stretch="0,0">
        <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="unload_storage_excel_button">
+        <widget class="QPushButton" name="import_db_products_excel_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -187,7 +213,32 @@
           </size>
          </property>
          <property name="text">
-          <string>Выгрузить в EXCEL</string>
+          <string>Импорт EXCEL</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="export_db_products_excel_button">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Экспорт EXCEL</string>
          </property>
         </widget>
        </item>
