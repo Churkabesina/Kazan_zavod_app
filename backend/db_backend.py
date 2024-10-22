@@ -41,6 +41,7 @@ class Database:
                                 mark_steel TEXT,
                                 diameter TEXT,
                                 lenght REAL,
+                                weight REAL,
                                 draw TEXT,
                                 FOREIGN KEY (type_metal) REFERENCES storage(type_metal),
                                 FOREIGN KEY (diameter) REFERENCES storage(size)
@@ -56,7 +57,7 @@ class Database:
                                         mark_steel TEXT DEFAULT NULL,
                                         diameter TEXT DEFAULT NULL,
                                         lenght REAL DEFAULT NULL,
-                                        weight REAL DEFAULT NULL,
+                                        total_weight REAL DEFAULT NULL,
                                         draw TEXT DEFAULT NULL
                                         );
                                         '''
@@ -68,11 +69,26 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
 
             # sqllite не умеет в много запросность
-            self._exec_sql_statement(query, sql_table_temp_products)
-            self._exec_sql_statement(query, sql_table_products)
             self._exec_sql_statement(query, sql_table_storage)
+            self._exec_sql_statement(query, sql_table_products)
+            self._exec_sql_statement(query, sql_table_temp_products)
             self._exec_sql_statement(query, sql_table_deals)
             self._exec_sql_statement(query, sql_table_leads)
+
+            add_base_metal_1 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2" 2АУ.21.003', NULL, 0, NULL)'''
+            add_base_metal_2 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2.5" 2АУ.21.003-10', NULL, 0, NULL)'''
+            add_base_metal_3 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 3" 2АУ.21.003-20', NULL, 0, NULL)'''
+            add_base_metal_4 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 70 Мпа 2АУ21003-40', NULL, 0, NULL)'''
+            add_base_metal_5 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 2уха 4.320', NULL, 0, NULL)'''
+            add_base_metal_6 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 3уха 4.14.002', NULL, 0, NULL)'''
+
+            self._exec_sql_statement(query, add_base_metal_1)
+            self._exec_sql_statement(query, add_base_metal_2)
+            self._exec_sql_statement(query, add_base_metal_3)
+            self._exec_sql_statement(query, add_base_metal_4)
+            self._exec_sql_statement(query, add_base_metal_5)
+            self._exec_sql_statement(query, add_base_metal_6)
+
             self.db.close()
 
     @staticmethod
@@ -132,7 +148,6 @@ class Database:
         selected_data = []
         while query.next():
             selected_data.append([query.value(x) for x in range(query.record().count())])
-        # print(f'backend func select_temp_table_rows: selected_data = {selected_data}')
         self.db.close()
         return selected_data
 
@@ -142,10 +157,50 @@ class Database:
         statement = '''DELETE FROM temp_products'''
         self._exec_sql_statement(query, statement)
         self.db.close()
+
+    def update_temp_table_row_by_id(self, _id: int, update_data: dict):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''UPDATE temp_products SET product = ?, count = ?, type_metal = ?, mark_steel = ?, diameter = ?, lenght = ?, total_weight = ?, draw = ? WHERE id = ?'''
+        query.prepare(statement)
+        query.bindValue(0, update_data['product'])
+        query.bindValue(1, 1)
+        query.bindValue(2, update_data['type_metal'])
+        query.bindValue(3, update_data['mark_steel'])
+        query.bindValue(4, update_data['diameter'])
+        query.bindValue(5, update_data['lenght'])
+        query.bindValue(6, update_data['weight'])
+        query.bindValue(7, update_data['draw'])
+        query.bindValue(8, _id)
+        self._exec_sql_statement(query)
+        self.db.close()
+
+    def update_temp_table_count_and_weight_by_id(self, _id: int, count: int, total_weight: float):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''UPDATE temp_products SET count = ?, total_weight = ? WHERE id = ?'''
+        query.prepare(statement)
+        query.bindValue(0, count)
+        query.bindValue(1, total_weight)
+        query.bindValue(2, _id)
+        self._exec_sql_statement(query)
+        self.db.close()
+
     ### методы к временной таблице - TEMP TABLE
 
     ### методы к таблице продукции - PRODUCTS TABLE
-    def select_products(self) -> list:
+    def select_products_db_rows(self) -> list[list]:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM products'''
+        self._exec_sql_statement(query, statement)
+        selected_data = []
+        while query.next():
+            selected_data.append([query.value(x) for x in range(query.record().count())])
+        self.db.close()
+        return selected_data
+
+    def select_all_products_products_db(self) -> list:
         self._open_db()
         query = QtSql.QSqlQuery()
         statement = '''SELECT product from products'''
@@ -155,7 +210,19 @@ class Database:
             selected_data.append(query.value(0))
         self.db.close()
         return selected_data
+
+    def select_products_db_row_by_product(self, product: str) -> dict:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM products WHERE  product = ?'''
+        query.prepare(statement)
+        query.bindValue(0, product)
+        self._exec_sql_statement(query)
+        query.next()
+        selected_data = {query.record().fieldName(x): query.value(x) for x in range(query.record().count())}
+        return selected_data
     ### методы к таблице продукции - PRODUCTS TABLE
+
 
     ### методы к таблице склада - STORAGE TABLE
     def select_storage_table_rows(self) -> list[list]:
@@ -166,10 +233,9 @@ class Database:
         selected_data = []
         while query.next():
             selected_data.append([query.value(x) for x in range(query.record().count())])
-        print(selected_data)
         return selected_data
 
-    def select_type_metal_and_size(self) -> dict[str, dict]:
+    def select_storage_table_type_metal_and_size(self) -> dict[str, dict]:
         self._open_db()
         query = QtSql.QSqlQuery()
         statement = '''SELECT id, type_metal, size FROM storage'''
@@ -183,7 +249,7 @@ class Database:
         self.db.close()
         return selected_data
 
-    def update_balance_kg_and_mm(self, type_metal: str, size: str | None, new_kg: float, new_mm: float | None):
+    def update_storage_table_balance_kg_and_mm(self, type_metal: str, size: str | None, new_kg: float, new_mm: float | None):
         self._open_db()
         query = QtSql.QSqlQuery()
         statement = '''UPDATE storage SET balance_kg = :kg, balance_mm = :mm WHERE type_metal = :metal and size = :size'''
@@ -194,3 +260,36 @@ class Database:
         query.bindValue(':size', size)
         self._exec_sql_statement(query)
         self.db.close()
+
+    def insert_row_storage_table(self, type_metal: str, size: str):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES (:type_metal, :size, 0, 0)'''
+        query.prepare(statement)
+        query.bindValue(':type_metal', type_metal)
+        query.bindValue(':size', size)
+        self._exec_sql_statement(query)
+        self.db.close()
+
+    def check_metal_exists_storage_table(self, type_metal: str, size: str) -> bool:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT EXISTS(SELECT 1 FROM storage WHERE type_metal = :type_metal AND size = :size)'''
+        query.prepare(statement)
+        query.bindValue(':type_metal', type_metal)
+        query.bindValue(':size', size)
+        self._exec_sql_statement(query)
+        query.next()
+        exists = query.value(0)
+        self.db.close()
+        return bool(exists)
+
+    def select_last_row_storage_table(self) -> list:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM storage ORDER BY id DESC LIMIT 1'''
+        self._exec_sql_statement(query, statement)
+        query.next()
+        selected_data = [query.value(x) for x in range(query.record().count())]
+        self.db.close()
+        return selected_data

@@ -20,11 +20,8 @@ class ProductsFrame(QFrame):
         self.ui.products_temp_table.horizontalHeader().hideSection(0)
 
         # Создаем делегат с элементами для QComboBox
-        self.items = self.db.select_products()
-        # print(f'QComboBox items = {self.items}')
-        self.delegate = ComboBoxDelegate(self.items, self.ui.products_temp_table)
-
-        # Устанавливаем делегат только для первого столбца
+        self.items = self.db.select_all_products_products_db()
+        self.delegate = ComboBoxDelegate(self.items, self.db, self.ui.products_temp_table)
         self.ui.products_temp_table.setItemDelegateForColumn(1, self.delegate)
 
         self.ui.add_product_button.clicked.connect(self.add_button_click_slot)
@@ -34,11 +31,20 @@ class ProductsFrame(QFrame):
         self.ui.clear_product_button.clicked.connect(self.delete_all_rows_slot)
         self.ui.back_button.clicked.connect(self.back_button_slot)
         self.ui.products_db_button.clicked.connect(self.products_db_button_slot)
+        self.table_model.dataChanged.connect(self.products_count_changed)
+
+    @Slot()
+    def products_count_changed(self, topLeft, bottomRight, roles):
+        if topLeft.column() == 2:
+            row = topLeft.row()
+            count = self.table_model.data(self.table_model.index(row, 2))
+            mass = self.table_model.data(self.table_model.index(row, 7))
+            total_weight = count*mass
+
 
     @Slot()
     def add_button_click_slot(self):
         last_id = self.db.select_last_id_temp_table()
-        print(f'last_id = {last_id}')
         row_count = self.table_model.rowCount()
         if last_id is None:
             self.db.add_temp_table_row(0)
@@ -57,7 +63,6 @@ class ProductsFrame(QFrame):
         selected_indexes = self.ui.products_temp_table.selectedIndexes()
         if selected_indexes:
             rows = sorted({index.row() for index in selected_indexes})
-            print(f'selected rows = {rows}')
             for row in reversed(rows):
                 cell_index = self.table_model.index(row, 1)
                 id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
@@ -68,11 +73,8 @@ class ProductsFrame(QFrame):
     def delete_by_right_click_slot(self, pos):
         index = self.ui.products_temp_table.indexAt(pos)
         row = index.row()
-        print(f'какая строка в TableView: {row}')
         cell_index = self.table_model.index(row, 1)
-        print(f'какой cell index в TableView: {cell_index}')
         id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
-        print(f'какой id_from_cell в TableView: {id_from_cell}')
         if index.isValid():
             self.table_model.removeRows(row, 1)
         self.db.del_temp_table_row(id_from_cell)
@@ -104,11 +106,10 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, parent=QModelIndex()):
         return 9
-        # return len(self._data[0]) - 1 if self._data else 0
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
-            print('Ошибка метода data в table_model: невалидный индекс модели')
+            print('Ошибка метода data в products frame в table_model: невалидный индекс модели')
             sys.exit(1)
         row = index.row()
         col = index.column()
@@ -118,12 +119,10 @@ class TableModel(QAbstractTableModel):
             return self._data[row][0]
 
     def setData(self, index, value, role=Qt.EditRole):
-        print(f'сработал setData: index = row:{index.row()} col:{index.column()}, value = {value}, role = {role}')
-        print(f'_data = {self._data}')
         if role == Qt.EditRole:
-            print(f'Значение: "{self._data[index.row()][index.column()]}" меняется на "{value}"')
-            self._data[index.row()][index.column()] = value
-            print(f'_data после изменений = {self._data}')
+            row = index.row()
+            col = index.column()
+            self._data[row][col] = value
             self.dataChanged.emit(index, index, [Qt.EditRole])
             return True
         return False
@@ -147,14 +146,16 @@ class TableModel(QAbstractTableModel):
 
 
 class ComboBoxDelegate(QStyledItemDelegate):
-    def __init__(self, items, parent=None):
+    def __init__(self, items, db: Database, parent=None):
         super().__init__(parent)
         self.items = items
+        self.db = db
 
     def createEditor(self, parent, option, index):
         editor = QComboBox(parent)
         editor.setEditable(True)
         editor.addItems(self.items)
+        editor.setCurrentIndex(-1)
         editor.currentIndexChanged.connect(self.commit_and_close_editor)
         return editor
 
@@ -163,8 +164,21 @@ class ComboBoxDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         value = editor.currentText()
-        print(f'value editor = {value}')
+        if value == '':
+            return
         model.setData(index, value, Qt.EditRole)
+        row = index.row()
+        _id = model.data(model.index(row, 0))
+        update_data = self.db.select_products_db_row_by_product(value)
+        model.setData(model.index(row, 1), update_data['product'])
+        model.setData(model.index(row, 2), 1)
+        model.setData(model.index(row, 3), update_data['type_metal'])
+        model.setData(model.index(row, 4), update_data['mark_steel'])
+        model.setData(model.index(row, 5), update_data['diameter'])
+        model.setData(model.index(row, 6), update_data['lenght'])
+        model.setData(model.index(row, 7), update_data['weight'])
+        model.setData(model.index(row, 8), update_data['draw'])
+        self.db.update_temp_table_row_by_id(_id, update_data)
 
     def commit_and_close_editor(self):
         editor = self.sender()

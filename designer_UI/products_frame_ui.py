@@ -23,7 +23,7 @@ class Ui_products_frame(object):
     def setupUi(self, products_frame):
         if not products_frame.objectName():
             products_frame.setObjectName(u"products_frame")
-        products_frame.resize(1361, 735)
+        products_frame.resize(1360, 735)
         self.verticalLayout_2 = QVBoxLayout(products_frame)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -223,6 +223,6 @@ class Ui_products_frame(object):
         self.clear_product_button.setText(QCoreApplication.translate("products_frame", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
         self.products_db_button.setText(QCoreApplication.translate("products_frame", u"\u0411\u0430\u0437\u0430 \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u0438", None))
         self.pdf_products_button.setText(QCoreApplication.translate("products_frame", u"\u0412\u044b\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044e \u0432 PDF", None))
-        self.pushButton.setText(QCoreApplication.translate("products_frame", u"\u0412 \u0441\u0447\u0435\u0442\u0430", None))
+        self.pushButton.setText(QCoreApplication.translate("products_frame", u"\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
     # retranslateUi
 

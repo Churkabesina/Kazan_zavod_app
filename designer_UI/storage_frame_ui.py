@@ -138,12 +138,12 @@ class Ui_storage_frame(object):
 
         self.pdf_layout.addWidget(self.unload_storage_excel_button)
 
-        self.pushButton = QPushButton(storage_frame)
-        self.pushButton.setObjectName(u"pushButton")
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
+        self.add_type_metal_button = QPushButton(storage_frame)
+        self.add_type_metal_button.setObjectName(u"add_type_metal_button")
+        sizePolicy.setHeightForWidth(self.add_type_metal_button.sizePolicy().hasHeightForWidth())
+        self.add_type_metal_button.setSizePolicy(sizePolicy)
 
-        self.pdf_layout.addWidget(self.pushButton)
+        self.pdf_layout.addWidget(self.add_type_metal_button)
 
         self.pdf_layout.setStretch(0, 5)
         self.pdf_layout.setStretch(1, 5)
@@ -175,6 +175,6 @@ class Ui_storage_frame(object):
         self.in_storage_button.setText(QCoreApplication.translate("storage_frame", u"+", None))
         self.out_storage_button.setText(QCoreApplication.translate("storage_frame", u"-", None))
         self.unload_storage_excel_button.setText(QCoreApplication.translate("storage_frame", u"\u0412\u044b\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0432 EXCEL", None))
-        self.pushButton.setText(QCoreApplication.translate("storage_frame", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432\u0438\u0434 \u043c\u0435\u0442\u0430\u043b\u043b\u0430", None))
+        self.add_type_metal_button.setText(QCoreApplication.translate("storage_frame", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432\u0438\u0434 \u043c\u0435\u0442\u0430\u043b\u043b\u0430", None))
     # retranslateUi
 

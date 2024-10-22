@@ -1,14 +1,13 @@
 import sys
-from operator import index
 
-from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex
-from PySide6.QtGui import QBrush, QColor
-from PySide6.QtWidgets import QFrame, QComboBox, QStyledItemDelegate, QDialog
-from select import select
+from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex, QRegularExpression
+from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
+from PySide6.QtWidgets import QFrame, QStyledItemDelegate, QDialog
 
 from UI.extended_UI import ExtendedUIStorageFrame
 from backend.db_backend import Database
 from designer_UI.in_out_metal_storage_dialog_ui import Ui_in_out_metal_storage_dialog
+from designer_UI.add_new_metal_type_dialog_ui import Ui_add_new_metal_type_dialog
 
 
 class StorageFrame(QFrame):
@@ -26,6 +25,7 @@ class StorageFrame(QFrame):
         self.ui.storage_db_table.horizontalHeader().hideSection(0)
 
         self.in_out_dialog = InOutStorageDialog(self.table_model, self.db)
+        self.add_metal_type_dialog = AddNewMetalTypeDialog(self.table_model, self.db, main_window, self.in_out_dialog)
 
         self.negative_delegate = NegativeNumberDelegate(self.ui.storage_db_table)
         self.ui.storage_db_table.setItemDelegateForColumn(3, self.negative_delegate)
@@ -34,6 +34,7 @@ class StorageFrame(QFrame):
         self.ui.back_button.clicked.connect(self.back_button_slot)
         self.ui.in_storage_button.clicked.connect(self.in_storage_button_slot)
         self.ui.out_storage_button.clicked.connect(self.out_storage_button_slot)
+        self.ui.add_type_metal_button.clicked.connect(self.add_metal_type_dialog_button)
 
     @Slot()
     def back_button_slot(self):
@@ -54,6 +55,10 @@ class StorageFrame(QFrame):
         self.in_out_dialog.is_input_dialog = False
         self.in_out_dialog.exec()
 
+    @Slot()
+    def add_metal_type_dialog_button(self):
+        self.add_metal_type_dialog.exec()
+
 class TableModel(QAbstractTableModel):
     def __init__(self, data: list[list], db: Database):
         super().__init__()
@@ -68,7 +73,7 @@ class TableModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
-            print('Ошибка метода data в table_model: невалидный индекс модели')
+            print('Ошибка метода data в storage frame в table_model: невалидный индекс модели')
             sys.exit(1)
         row = index.row()
         col = index.column()
@@ -88,9 +93,9 @@ class TableModel(QAbstractTableModel):
     #     return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def insertRows(self, row, count, parent=QModelIndex()):
-        last_id = self.db.select_last_id_temp_table()
+        last_row = self.db.select_last_row_storage_table()
         self.beginInsertRows(parent, row, row + count - 1)
-        self._data.insert(row, [last_id, '', '', '', '', '', '', '', ''])
+        self._data.insert(row, last_row)
         self.endInsertRows()
         return True
 
@@ -102,9 +107,7 @@ class TableModel(QAbstractTableModel):
     def find_row_by_id(self, _id):
         row_count = self.rowCount()
         for row in range(row_count):
-            # _index = self.index(row, 0)
             if self._data[row][0] == _id:
-                print(f'row = {row}')
                 return row
 
 class InOutStorageDialog(QDialog):
@@ -118,10 +121,8 @@ class InOutStorageDialog(QDialog):
         self.setWindowModality(Qt.ApplicationModal)
         self.ui.balance_double_spin_box.setMaximum(100000)
 
-        ########            сделать _metal_data так: {труба: {30x30: 1, 50x50: 2})]}
-        self._metal_data = self.db.select_type_metal_and_size()
+        self._metal_data = self.db.select_storage_table_type_metal_and_size()
         self.ui.type_metall_combo_box.addItems(list(self._metal_data.keys()))
-        print(self._metal_data)
         self.is_input_dialog = True # флаг для понятия окно расхода или прихода
 
         self.ui.type_metall_combo_box.currentIndexChanged.connect(self.type_metal_combo_box_chosen)
@@ -156,7 +157,7 @@ class InOutStorageDialog(QDialog):
                 else:
                     new_balance_kg_sht = current_balance_kg_sht - spin_box_value
                 self.model.setData(self.model.index(row, 2 + 1), new_balance_kg_sht)
-                self.db.update_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
+                self.db.update_storage_table_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
             else:
                 current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
                 if self.is_input_dialog:
@@ -166,7 +167,7 @@ class InOutStorageDialog(QDialog):
                 new_balance_mm = self.balance_in_mm_formula(new_balance_kg_sht)
                 self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
                 self.model.setData(self.model.index(row, 4), new_balance_mm)
-                self.db.update_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
+                self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
             print('Данные обновлены!')
             self.close()
         else:
@@ -176,6 +177,56 @@ class InOutStorageDialog(QDialog):
     def balance_in_mm_formula(kg_balance) -> float:
         balance_mm = kg_balance * 3.14
         return balance_mm
+
+class AddNewMetalTypeDialog(QDialog):
+    def __init__(self, model: TableModel, db: Database, main_window, in_out_dialog: InOutStorageDialog):
+        super().__init__()
+
+        self.main_window = main_window
+        self.model = model
+        self.db = db
+        self.in_out_dialog = in_out_dialog
+        self.ui = Ui_add_new_metal_type_dialog()
+        self.ui.setupUi(self)
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowTitle('Добавить вид металла')
+
+        self.ui.type_metall_combo_box.addItems(['Труба', 'Круг'])
+
+        self.regex_krug = QRegularExpression(r"^[1-9]\d*$")
+        self.validator_krug = QRegularExpressionValidator(self.regex_krug)
+
+        self.regex_truba = QRegularExpression(r"^[1-9]\d*[xXхХ][1-9]\d*$")
+        self.validator_truba = QRegularExpressionValidator(self.regex_truba)
+
+        self.ui.ok_button_2.clicked.connect(self.add_button_slot)
+        self.ui.type_metall_combo_box.currentIndexChanged.connect(self.type_metal_combo_box_chosen)
+
+        self.ui.type_metall_combo_box.setCurrentIndex(1)
+
+    @Slot()
+    def add_button_slot(self):
+        type_metal = self.ui.type_metall_combo_box.currentText()
+        size = self.ui.lineEdit.text()
+        if size != '':
+            if not self.db.check_metal_exists_storage_table(type_metal, size):
+                self.db.insert_row_storage_table(type_metal, size)
+                self.model.insertRows(self.model.rowCount(), 1)
+                self.in_out_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
+                print('Запись добавлена!')
+                self.close()
+            else:
+                print('Такой металл уже существует')
+        else:
+            print('Нужно ввести размер')
+
+    @Slot()
+    def type_metal_combo_box_chosen(self):
+        current_text = self.ui.type_metall_combo_box.currentText()
+        if current_text == 'Труба':
+            self.ui.lineEdit.setValidator(self.validator_truba)
+        else:
+            self.ui.lineEdit.setValidator(self.validator_krug)
 
 
 class NegativeNumberDelegate(QStyledItemDelegate):

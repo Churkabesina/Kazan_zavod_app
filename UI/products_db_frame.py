@@ -15,7 +15,7 @@ class ProductsDBFrame(QFrame):
         self.ui = ExtendedUIProductsDBFrame()
         self.ui.setupUi(self)
 
-        self.table_data = self.db.
+        self.table_data = self.db.select_products_db_rows()
         self.table_model = TableModel(self.table_data, self.db)
         self.ui.storage_db_table.setModel(self.table_model)
         self.ui.storage_db_table.horizontalHeader().hideSection(0)
@@ -38,8 +38,7 @@ class TableModel(QAbstractTableModel):
         return len(self._data)
 
     def columnCount(self, parent=QModelIndex()):
-        return 9
-        # return len(self._data[0]) - 1 if self._data else 0
+        return 8
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
@@ -64,14 +63,14 @@ class TableModel(QAbstractTableModel):
     #         return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
     #     return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    # def insertRows(self, row, count, parent=QModelIndex()):
-    #     last_id = self.db.select_last_id_temp_table()
-    #     self.beginInsertRows(parent, row, row + count - 1)
-    #     self._data.insert(row, [last_id,'','','','','','','',''])
-    #     self.endInsertRows()
-    #     return True
-    #
-    # def removeRows(self, row, count, parent=QModelIndex()):
-    #     self.beginRemoveRows(parent, row, row + count - 1)
-    #     del self._data[row:row + count]
-    #     self.endRemoveRows()
+    def insertRows(self, row, count, parent=QModelIndex()):
+        last_id = self.db.select_last_id_temp_table()
+        self.beginInsertRows(parent, row, row + count - 1)
+        self._data.insert(row, [last_id,'','','','','','','',''])
+        self.endInsertRows()
+        return True
+
+    def removeRows(self, row, count, parent=QModelIndex()):
+        self.beginRemoveRows(parent, row, row + count - 1)
+        del self._data[row:row + count]
+        self.endRemoveRows()
