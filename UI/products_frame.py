@@ -37,9 +37,17 @@ class ProductsFrame(QFrame):
     def products_count_changed(self, topLeft, bottomRight, roles):
         if topLeft.column() == 2:
             row = topLeft.row()
+            _id = int(self.table_model.data(self.table_model.index(row, 0)))
+            product_name = self.table_model.data(self.table_model.index(row, 1))
+            type_metal = self.table_model.data(self.table_model.index(row, 3))
             count = self.table_model.data(self.table_model.index(row, 2))
-            mass = self.table_model.data(self.table_model.index(row, 7))
-            total_weight = count*mass
+            if 'гайка' not in type_metal.lower():
+                weight = self.db.select_product_weight_by_product_product_db(product_name)
+                total_weight = int(count)*weight
+                self.table_model.setData(self.table_model.index(row, 7), total_weight)
+                self.db.update_temp_table_count_and_total_weight_by_id(_id, count, total_weight)
+            else:
+                self.db.update_temp_table_count_and_total_weight_by_id(_id, count, None)
 
 
     @Slot()

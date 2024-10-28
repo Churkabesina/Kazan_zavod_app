@@ -1,5 +1,7 @@
 import os
 import sys
+from os.path import exists
+
 from PySide6 import QtSql
 
 class Database:
@@ -175,7 +177,7 @@ class Database:
         self._exec_sql_statement(query)
         self.db.close()
 
-    def update_temp_table_count_and_weight_by_id(self, _id: int, count: int, total_weight: float):
+    def update_temp_table_count_and_total_weight_by_id(self, _id: int, count: int, total_weight: float | None):
         self._open_db()
         query = QtSql.QSqlQuery()
         statement = '''UPDATE temp_products SET count = ?, total_weight = ? WHERE id = ?'''
@@ -220,7 +222,64 @@ class Database:
         self._exec_sql_statement(query)
         query.next()
         selected_data = {query.record().fieldName(x): query.value(x) for x in range(query.record().count())}
+        self.db.close()
         return selected_data
+
+    def check_product_exists_products_db(self, product: str) -> bool:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT 1 FROM products WHERE  product = ?'''
+        query.prepare(statement)
+        query.bindValue(0, product)
+        self._exec_sql_statement(query)
+        query.next()
+        _exists = query.value(0)
+        self.db.close()
+        return bool(_exists)
+
+    def insert_product_products_db(self,
+                                   product: str,
+                                   type_metal: str,
+                                   mark_steel: str | None,
+                                   diameter: str,
+                                   lenght: float,
+                                   weight: float | None,
+                                   draw: str | None):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''INSERT INTO products (product, type_metal, mark_steel, diameter, lenght, weight, draw) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+        query.prepare(statement)
+        query.bindValue(0, product)
+        query.bindValue(1, type_metal)
+        query.bindValue(2, mark_steel)
+        query.bindValue(3, diameter)
+        query.bindValue(4, lenght)
+        query.bindValue(5, weight)
+        query.bindValue(6, draw)
+        self._exec_sql_statement(query)
+        self.db.close()
+
+    def select_last_row_products_db(self) -> list:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM products ORDER BY id DESC LIMIT 1'''
+        self._exec_sql_statement(query, statement)
+        query.next()
+        selected_data = [query.value(x) for x in range(query.record().count())]
+        self.db.close()
+        return selected_data
+
+    def select_product_weight_by_product_product_db(self, product: str) -> float:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT weight FROM products WHERE  product = ?'''
+        query.prepare(statement)
+        query.bindValue(0, product)
+        self._exec_sql_statement(query)
+        query.next()
+        weight = query.value(0)
+        self.db.close()
+        return weight
     ### методы к таблице продукции - PRODUCTS TABLE
 
 
@@ -233,6 +292,7 @@ class Database:
         selected_data = []
         while query.next():
             selected_data.append([query.value(x) for x in range(query.record().count())])
+        self.db.close()
         return selected_data
 
     def select_storage_table_type_metal_and_size(self) -> dict[str, dict]:
@@ -280,9 +340,9 @@ class Database:
         query.bindValue(':size', size)
         self._exec_sql_statement(query)
         query.next()
-        exists = query.value(0)
+        _exists = query.value(0)
         self.db.close()
-        return bool(exists)
+        return bool(_exists)
 
     def select_last_row_storage_table(self) -> list:
         self._open_db()

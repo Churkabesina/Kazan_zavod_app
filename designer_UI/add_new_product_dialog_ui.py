@@ -74,15 +74,15 @@ class Ui_add_new_product_dialog(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(-1, -1, -1, 50)
-        self.lineEdit_2 = QLineEdit(add_new_product_dialog)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        self.product_name_line_edit = QLineEdit(add_new_product_dialog)
+        self.product_name_line_edit.setObjectName(u"product_name_line_edit")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_2.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.product_name_line_edit.sizePolicy().hasHeightForWidth())
+        self.product_name_line_edit.setSizePolicy(sizePolicy)
 
-        self.horizontalLayout.addWidget(self.lineEdit_2)
+        self.horizontalLayout.addWidget(self.product_name_line_edit)
 
         self.type_metall_combo_box = QComboBox(add_new_product_dialog)
         self.type_metall_combo_box.setObjectName(u"type_metall_combo_box")
@@ -92,26 +92,26 @@ class Ui_add_new_product_dialog(object):
 
         self.horizontalLayout.addWidget(self.type_metall_combo_box)
 
-        self.lineEdit = QLineEdit(add_new_product_dialog)
-        self.lineEdit.setObjectName(u"lineEdit")
-        sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-        self.lineEdit.setSizePolicy(sizePolicy)
+        self.mark_steel_line_edit = QLineEdit(add_new_product_dialog)
+        self.mark_steel_line_edit.setObjectName(u"mark_steel_line_edit")
+        sizePolicy.setHeightForWidth(self.mark_steel_line_edit.sizePolicy().hasHeightForWidth())
+        self.mark_steel_line_edit.setSizePolicy(sizePolicy)
 
-        self.horizontalLayout.addWidget(self.lineEdit)
+        self.horizontalLayout.addWidget(self.mark_steel_line_edit)
 
-        self.comboBox = QComboBox(add_new_product_dialog)
-        self.comboBox.setObjectName(u"comboBox")
-        sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
-        self.comboBox.setSizePolicy(sizePolicy)
+        self.diamiter_combo_box = QComboBox(add_new_product_dialog)
+        self.diamiter_combo_box.setObjectName(u"diamiter_combo_box")
+        sizePolicy.setHeightForWidth(self.diamiter_combo_box.sizePolicy().hasHeightForWidth())
+        self.diamiter_combo_box.setSizePolicy(sizePolicy)
 
-        self.horizontalLayout.addWidget(self.comboBox)
+        self.horizontalLayout.addWidget(self.diamiter_combo_box)
 
-        self.lineEdit_3 = QLineEdit(add_new_product_dialog)
-        self.lineEdit_3.setObjectName(u"lineEdit_3")
-        sizePolicy.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
-        self.lineEdit_3.setSizePolicy(sizePolicy)
+        self.lenght_line_edit = QLineEdit(add_new_product_dialog)
+        self.lenght_line_edit.setObjectName(u"lenght_line_edit")
+        sizePolicy.setHeightForWidth(self.lenght_line_edit.sizePolicy().hasHeightForWidth())
+        self.lenght_line_edit.setSizePolicy(sizePolicy)
 
-        self.horizontalLayout.addWidget(self.lineEdit_3)
+        self.horizontalLayout.addWidget(self.lenght_line_edit)
 
         self.choose_draw_button = QPushButton(add_new_product_dialog)
         self.choose_draw_button.setObjectName(u"choose_draw_button")
@@ -132,15 +132,15 @@ class Ui_add_new_product_dialog(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
-        self.ok_button_2 = QPushButton(add_new_product_dialog)
-        self.ok_button_2.setObjectName(u"ok_button_2")
+        self.ok_button = QPushButton(add_new_product_dialog)
+        self.ok_button.setObjectName(u"ok_button")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.ok_button_2.sizePolicy().hasHeightForWidth())
-        self.ok_button_2.setSizePolicy(sizePolicy2)
+        sizePolicy2.setHeightForWidth(self.ok_button.sizePolicy().hasHeightForWidth())
+        self.ok_button.setSizePolicy(sizePolicy2)
 
-        self.horizontalLayout_4.addWidget(self.ok_button_2)
+        self.horizontalLayout_4.addWidget(self.ok_button)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -164,6 +164,6 @@ class Ui_add_new_product_dialog(object):
         self.label_5.setText(QCoreApplication.translate("add_new_product_dialog", u"\u0414\u043b\u0438\u043d\u0430, \u043c\u043c", None))
         self.label_6.setText(QCoreApplication.translate("add_new_product_dialog", u"\u0427\u0435\u0440\u0442\u0435\u0436", None))
         self.choose_draw_button.setText("")
-        self.ok_button_2.setText(QCoreApplication.translate("add_new_product_dialog", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
+        self.ok_button.setText(QCoreApplication.translate("add_new_product_dialog", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
     # retranslateUi
 

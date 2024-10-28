@@ -170,7 +170,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="in_storage_button">
+        <widget class="QPushButton" name="add_product_db_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -183,7 +183,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="out_storage_button">
+        <widget class="QPushButton" name="del_product_db_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>

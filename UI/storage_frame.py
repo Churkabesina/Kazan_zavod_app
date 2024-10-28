@@ -164,7 +164,7 @@ class InOutStorageDialog(QDialog):
                     new_balance_kg_sht = current_balance_kg_sht + spin_box_value
                 else:
                     new_balance_kg_sht = current_balance_kg_sht - spin_box_value
-                new_balance_mm = self.balance_in_mm_formula(new_balance_kg_sht)
+                new_balance_mm = self.balance_in_mm_formula(type_metal, size, new_balance_kg_sht)
                 self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
                 self.model.setData(self.model.index(row, 4), new_balance_mm)
                 self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
@@ -174,9 +174,21 @@ class InOutStorageDialog(QDialog):
             print('Невозможно добавить/убавить ноль')
 
     @staticmethod
-    def balance_in_mm_formula(kg_balance) -> float:
-        balance_mm = kg_balance * 3.14
-        return balance_mm
+    def balance_in_mm_formula(type_metal: str, size: str, kg_balance) -> float:
+        m = float(kg_balance)
+        if type_metal.lower() == 'труба':
+            size_split = size.split('x')
+            print(size_split)
+            d_external = float(size_split[0])
+            print(d_external)
+            d_internal = d_external - (2*float(size_split[1]))
+            print(d_internal)
+        else:
+            d_external = float(size)
+            d_internal = 0
+        s = 3.14 * ((d_external / 2)**2 - (d_internal / 2)**2)
+        l = round(m/(7850*s), 2)
+        return l
 
 class AddNewMetalTypeDialog(QDialog):
     def __init__(self, model: TableModel, db: Database, main_window, in_out_dialog: InOutStorageDialog):
@@ -210,9 +222,12 @@ class AddNewMetalTypeDialog(QDialog):
         size = self.ui.lineEdit.text()
         if size != '':
             if not self.db.check_metal_exists_storage_table(type_metal, size):
+                # русская х в англ. x
+                size = size.lower().replace('х', 'x')
                 self.db.insert_row_storage_table(type_metal, size)
                 self.model.insertRows(self.model.rowCount(), 1)
                 self.in_out_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
+                self.main_window.products_db_frame.add_new_product_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
                 print('Запись добавлена!')
                 self.close()
             else:

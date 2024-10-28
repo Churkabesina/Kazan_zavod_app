@@ -1,6 +1,7 @@
+import os.path
 import sys
 
-from backend.cfg_loader import load_cfg
+from backend.backend import load_cfg, create_draws_folder
 from backend.db_backend import Database
 
 from PySide6.QtWidgets import QApplication, QMainWindow
@@ -22,7 +23,7 @@ class MainWindow(QMainWindow):
         self.leads_frame = LeadsFrame(self)
         self.products_frame = ProductsFrame(self, DB)
         self.storage_frame = StorageFrame(self, DB)
-        self.products_db_frame = ProductsDBFrame(self, DB)
+        self.products_db_frame = ProductsDBFrame(self, DB, DRAWS_FOLDER)
         
 
         self.ui.centralwidget.layout().addWidget(self.storage_frame)
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     cfg = load_cfg()
+    DRAWS_FOLDER = create_draws_folder(cfg['DRAWS']['draws_folder'])
     app = QApplication(sys.argv)
     DB = Database(cfg['DB']['db_name'], cfg['DB']['db_path'])
     DB.create_db()
