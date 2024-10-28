@@ -25,7 +25,9 @@ class Ui_products_db_frame(object):
             products_db_frame.setObjectName(u"products_db_frame")
         products_db_frame.resize(1360, 735)
         self.verticalLayout = QVBoxLayout(products_db_frame)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.frame_layout = QVBoxLayout()
         self.frame_layout.setSpacing(0)
         self.frame_layout.setObjectName(u"frame_layout")
@@ -113,10 +115,10 @@ class Ui_products_db_frame(object):
 
         self.frame_layout.addLayout(self.labels_layout)
 
-        self.storage_db_table = QTableView(products_db_frame)
-        self.storage_db_table.setObjectName(u"storage_db_table")
+        self.products_db_table = QTableView(products_db_frame)
+        self.products_db_table.setObjectName(u"products_db_table")
 
-        self.frame_layout.addWidget(self.storage_db_table)
+        self.frame_layout.addWidget(self.products_db_table)
 
         self.buttons_layout = QHBoxLayout()
         self.buttons_layout.setSpacing(0)

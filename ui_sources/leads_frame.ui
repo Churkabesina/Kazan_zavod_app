@@ -14,6 +14,21 @@
    <string>Frame</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QVBoxLayout" name="frame_layout" stretch="1,14,3,1">
      <property name="spacing">
@@ -78,8 +93,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1111</width>
-          <height>509</height>
+          <width>1129</width>
+          <height>523</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">

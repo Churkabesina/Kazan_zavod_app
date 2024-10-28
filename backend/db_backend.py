@@ -280,6 +280,15 @@ class Database:
         weight = query.value(0)
         self.db.close()
         return weight
+
+    def del_product_products_db_by_id(self, _id: int):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''DELETE FROM products WHERE id = ?'''
+        query.prepare(statement)
+        query.bindValue(0, _id)
+        self._exec_sql_statement(query)
+        self.db.close()
     ### методы к таблице продукции - PRODUCTS TABLE
 
 

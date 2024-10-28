@@ -14,6 +14,21 @@
    <string>Frame</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QVBoxLayout" name="frame_layout" stretch="1,1,14,2,2">
      <property name="spacing">
@@ -162,7 +177,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTableView" name="storage_db_table"/>
+      <widget class="QTableView" name="products_db_table"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="buttons_layout" stretch="1,1">

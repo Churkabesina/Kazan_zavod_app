@@ -68,14 +68,15 @@ class ProductsFrame(QFrame):
     # возможно лишнее - удаление выделенных строк через кнопку
     @Slot()
     def delete_selected_row_slot(self):
-        selected_indexes = self.ui.products_temp_table.selectedIndexes()
-        if selected_indexes:
-            rows = sorted({index.row() for index in selected_indexes})
-            for row in reversed(rows):
-                cell_index = self.table_model.index(row, 1)
-                id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
-                self.table_model.removeRows(row, 1)
-                self.db.del_temp_table_row(id_from_cell)
+        print('заглушка')
+        # selected_indexes = self.ui.products_temp_table.selectedIndexes()
+        # if selected_indexes:
+        #     rows = sorted({index.row() for index in selected_indexes})
+        #     for row in reversed(rows):
+        #         cell_index = self.table_model.index(row, 1)
+        #         id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
+        #         self.table_model.removeRows(row, 1)
+        #         self.db.del_temp_table_row(id_from_cell)
 
     @Slot()
     def delete_by_right_click_slot(self, pos):

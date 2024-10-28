@@ -29,7 +29,7 @@ class ExtendedUIProductsDBFrame(Ui_products_db_frame):
     def setupUi(self, storage_frame):
         super().setupUi(storage_frame)
         # отключение названий строк и стобцов в TableView
-        self.storage_db_table.verticalHeader().setVisible(False)
-        self.storage_db_table.horizontalHeader().setVisible(False)
+        self.products_db_table.verticalHeader().setVisible(False)
+        self.products_db_table.horizontalHeader().setVisible(False)
         # растяжение на все пространство по горизонту
-        self.storage_db_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.products_db_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)

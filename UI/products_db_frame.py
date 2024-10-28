@@ -3,7 +3,7 @@ import sys
 
 from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import QFrame, QDialog, QFileDialog
+from PySide6.QtWidgets import QFrame, QDialog, QFileDialog, QMessageBox
 from UI.extended_UI import ExtendedUIProductsDBFrame
 from backend.db_backend import Database
 from backend.backend import copy_pdf_to_draws_folder
@@ -22,8 +22,8 @@ class ProductsDBFrame(QFrame):
 
         self.table_data = self.db.select_products_db_rows()
         self.table_model = TableModel(self.table_data, self.db)
-        self.ui.storage_db_table.setModel(self.table_model)
-        self.ui.storage_db_table.horizontalHeader().hideSection(0)
+        self.ui.products_db_table.setModel(self.table_model)
+        self.ui.products_db_table.horizontalHeader().hideSection(0)
 
         self.add_new_product_dialog = AddNewProductDialog(self.main_window, self.db, self.table_model, self.draws_folder)
 
@@ -42,7 +42,26 @@ class ProductsDBFrame(QFrame):
 
     @Slot()
     def del_product_db_button_slot(self):
-        print('del')
+        selected_indexes = self.ui.products_db_table.selectedIndexes()
+        if selected_indexes:
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Icon.Question)
+            msg_box.setWindowTitle("Подтверждение")
+            msg_box.setText("Вы уверены, что хотите выполнить это действие?")
+            button_yes = msg_box.addButton("Да", QMessageBox.ButtonRole.YesRole)
+            button_no = msg_box.addButton("Нет", QMessageBox.ButtonRole.NoRole)
+            msg_box.setDefaultButton(button_no)
+            msg_box.exec()
+            if msg_box.clickedButton() == button_yes:
+                print("Действие подтверждено!")
+                rows = sorted({index.row() for index in selected_indexes})
+                for row in reversed(rows):
+                    cell_index = self.table_model.index(row, 1)
+                    id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
+                    self.table_model.removeRows(row, 1)
+                    self.db.del_product_products_db_by_id(id_from_cell)
+            else:
+                print("Действие отменено")
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data: list[list], db: Database):

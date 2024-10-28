@@ -27,6 +27,7 @@ class Ui_storage_frame(object):
         self.verticalLayout = QVBoxLayout(storage_frame)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.frame_layout = QVBoxLayout()
         self.frame_layout.setSpacing(0)
         self.frame_layout.setObjectName(u"frame_layout")
