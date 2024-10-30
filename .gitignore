@@ -5,3 +5,8 @@ __pycache__
 database.db
 чертежи
 config.ini
+склад EXCEL
+style.qss
+build
+dist
+выгрузка PDF

@@ -15,6 +15,7 @@ class ExtendedUIProductsFrame(Ui_products_frame):
         # политика кастомного меню, нужно для удаления по нажатию на пкм
         self.products_temp_table.setContextMenuPolicy(Qt.CustomContextMenu)
 
+        self.products_temp_table.verticalHeader().setDefaultSectionSize(40)
 
 class ExtendedUIStorageFrame(Ui_storage_frame):
     def setupUi(self, storage_frame):
@@ -25,6 +26,8 @@ class ExtendedUIStorageFrame(Ui_storage_frame):
         # растяжение на все пространство по горизонту
         self.storage_db_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
+        self.storage_db_table.verticalHeader().setDefaultSectionSize(40)
+
 class ExtendedUIProductsDBFrame(Ui_products_db_frame):
     def setupUi(self, storage_frame):
         super().setupUi(storage_frame)
@@ -33,3 +36,5 @@ class ExtendedUIProductsDBFrame(Ui_products_db_frame):
         self.products_db_table.horizontalHeader().setVisible(False)
         # растяжение на все пространство по горизонту
         self.products_db_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        self.products_db_table.verticalHeader().setDefaultSectionSize(40)

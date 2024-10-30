@@ -60,6 +60,7 @@ class ProductsDBFrame(QFrame):
                     id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
                     self.table_model.removeRows(row, 1)
                     self.db.del_product_products_db_by_id(id_from_cell)
+                print('Записи удалены!')
             else:
                 print("Действие отменено")
 

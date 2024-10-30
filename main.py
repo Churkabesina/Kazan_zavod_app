@@ -1,7 +1,9 @@
 import os.path
 import sys
 
-from backend.backend import load_cfg, create_draws_folder
+from PySide6.QtCore import QFile
+
+from backend.backend import load_cfg, create_draws_folder, create_storage_excel_folder, create_temp_products_pdf_folder
 from backend.db_backend import Database
 
 from PySide6.QtWidgets import QApplication, QMainWindow
@@ -21,10 +23,9 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.leads_frame = LeadsFrame(self)
-        self.products_frame = ProductsFrame(self, DB)
-        self.storage_frame = StorageFrame(self, DB)
+        self.products_frame = ProductsFrame(self, DB, TEMP_PRODUCTS_PDF_FOLDER, DRAWS_FOLDER)
+        self.storage_frame = StorageFrame(self, DB, STORAGE_EXCEL_FOLDER)
         self.products_db_frame = ProductsDBFrame(self, DB, DRAWS_FOLDER)
-        
 
         self.ui.centralwidget.layout().addWidget(self.storage_frame)
         self.ui.centralwidget.layout().addWidget(self.products_frame)
@@ -39,9 +40,19 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     cfg = load_cfg()
-    DRAWS_FOLDER = create_draws_folder(cfg['DRAWS']['draws_folder'])
+    DRAWS_FOLDER = create_draws_folder(cfg['PATHS']['draws_folder'])
+    STORAGE_EXCEL_FOLDER = create_storage_excel_folder(cfg['PATHS']['storage_excel_export_path'])
+    TEMP_PRODUCTS_PDF_FOLDER = create_temp_products_pdf_folder(cfg['PATHS']['export_pdf_folder'])
     app = QApplication(sys.argv)
-    DB = Database(cfg['DB']['db_name'], cfg['DB']['db_path'])
+
+    # unreal_stylesheet.setup()
+    # qss_file = QFile("style.qss")
+    # qss_file.open(QFile.OpenMode.ReadOnly | QFile.OpenMode.Text)
+    # app.setStyleSheet(qss_file.readAll().data().decode())
+    # qss_file.close()
+    # app.setStyleSheet('''QFrame {background-color: gray;} QTableView {background-color: white;} QPushButton {background-color: white;} QListView {background-color: white;} QMessageBox {background-color: white;}''')
+
+    DB = Database(cfg['DB']['db_name'], cfg['DB']['db_folder'])
     DB.create_db()
     main_window = MainWindow()
     main_window.show()

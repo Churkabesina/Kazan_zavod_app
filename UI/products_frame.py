@@ -1,16 +1,21 @@
+import os
 import sys
 
-from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex
+from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex, QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import QFrame, QComboBox, QStyledItemDelegate
 from UI.extended_UI import ExtendedUIProductsFrame
+from backend.backend import unload_products_temp_table_to_pdf
 from backend.db_backend import Database
 
 class ProductsFrame(QFrame):
-    def __init__(self, main_window, db):
+    def __init__(self, main_window, db, products_pdf_folder, draws_folder):
         super().__init__()
 
         self.main_window = main_window
         self.db: Database = db
+        self.draws_folder = draws_folder
+        self.products_pdf_folder = products_pdf_folder
         self.ui = ExtendedUIProductsFrame()
         self.ui.setupUi(self)
 
@@ -32,6 +37,7 @@ class ProductsFrame(QFrame):
         self.ui.back_button.clicked.connect(self.back_button_slot)
         self.ui.products_db_button.clicked.connect(self.products_db_button_slot)
         self.table_model.dataChanged.connect(self.products_count_changed)
+        self.ui.pdf_products_button.clicked.connect(self.pdf_button_slot)
 
     @Slot()
     def products_count_changed(self, topLeft, bottomRight, roles):
@@ -86,8 +92,24 @@ class ProductsFrame(QFrame):
         id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
         if index.isValid():
             self.table_model.removeRows(row, 1)
-        self.db.del_temp_table_row(id_from_cell)
+            self.db.del_temp_table_row(id_from_cell)
 
+    @Slot()
+    def pdf_button_slot(self):
+        draws_paths = []
+        for row in self.table_model._data:
+            draw = row[-1]
+            if draw != '':
+                draw_path = os.path.abspath(self.draws_folder + r'/' + draw)
+                if os.path.exists(draw_path):
+                    draws_paths.append(draw_path)
+                else:
+                    print(f'Такого чертежа: {draw} нет в папке, отмена выгрузки')
+                    return
+        if draws_paths:
+            unload_products_temp_table_to_pdf(draws_paths, self.products_pdf_folder)
+        else:
+            print('Нет ни одного чертежа для выгрузки')
 
     @Slot()
     def choose_fist_cell_click_slot(self, index):
@@ -118,8 +140,9 @@ class TableModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
-            print('Ошибка метода data в products frame в table_model: невалидный индекс модели')
-            sys.exit(1)
+            return
+            # print('Ошибка метода data в products frame в table_model: невалидный индекс модели')
+            # sys.exit(1)
         row = index.row()
         col = index.column()
         if role == Qt.DisplayRole:
@@ -163,6 +186,9 @@ class ComboBoxDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         editor = QComboBox(parent)
         editor.setEditable(True)
+        editor.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        editor.completer().setCompletionMode(editor.completer().CompletionMode.PopupCompletion)
+        editor.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         editor.addItems(self.items)
         editor.setCurrentIndex(-1)
         editor.currentIndexChanged.connect(self.commit_and_close_editor)
@@ -173,7 +199,7 @@ class ComboBoxDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         value = editor.currentText()
-        if value == '':
+        if value == '' or value not in self.items:
             return
         model.setData(index, value, Qt.EditRole)
         row = index.row()

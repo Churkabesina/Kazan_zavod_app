@@ -74,7 +74,7 @@
        <item>
         <widget class="QLabel" name="frame_name_label">
          <property name="text">
-          <string>Склад</string>
+          <string>СКЛАД</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -104,7 +104,7 @@
        <item>
         <widget class="QLabel" name="type_metall_label_2">
          <property name="text">
-          <string>Вид металла</string>
+          <string>ВИД МЕТАЛЛА</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -114,7 +114,7 @@
        <item>
         <widget class="QLabel" name="size_mm_label">
          <property name="text">
-          <string>Размер, мм</string>
+          <string>РАЗМЕР, ММ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -124,7 +124,7 @@
        <item>
         <widget class="QLabel" name="balance_kg_label">
          <property name="text">
-          <string>Остаток, кг | шт</string>
+          <string>ОСТАТОК, КГ/ШТ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -134,7 +134,7 @@
        <item>
         <widget class="QLabel" name="balance_mm_label">
          <property name="text">
-          <string>Остаток, мм</string>
+          <string>ОСТАТОК, ММ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

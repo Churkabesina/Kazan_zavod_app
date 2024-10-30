@@ -6,20 +6,22 @@ from PySide6.QtWidgets import QFrame, QStyledItemDelegate, QDialog
 
 from UI.extended_UI import ExtendedUIStorageFrame
 from backend.db_backend import Database
+from backend.backend import unload_storage_to_excel
 from designer_UI.in_out_metal_storage_dialog_ui import Ui_in_out_metal_storage_dialog
 from designer_UI.add_new_metal_type_dialog_ui import Ui_add_new_metal_type_dialog
 
 
 class StorageFrame(QFrame):
-    def __init__(self, main_window, db: Database):
+    def __init__(self, main_window, db: Database, storage_excel_folder):
         super().__init__()
 
         self.main_window = main_window
         self.db = db
+        self.storage_excel_folder = storage_excel_folder
         self.ui = ExtendedUIStorageFrame()
         self.ui.setupUi(self)
 
-        self.table_data = self.db.select_storage_table_rows()
+        self.table_data = self.db.select_storage_table_rows()[::-1]
         self.table_model = TableModel(self.table_data, self.db)
         self.ui.storage_db_table.setModel(self.table_model)
         self.ui.storage_db_table.horizontalHeader().hideSection(0)
@@ -30,11 +32,11 @@ class StorageFrame(QFrame):
         self.negative_delegate = NegativeNumberDelegate(self.ui.storage_db_table)
         self.ui.storage_db_table.setItemDelegateForColumn(3, self.negative_delegate)
 
-
         self.ui.back_button.clicked.connect(self.back_button_slot)
         self.ui.in_storage_button.clicked.connect(self.in_storage_button_slot)
         self.ui.out_storage_button.clicked.connect(self.out_storage_button_slot)
         self.ui.add_type_metal_button.clicked.connect(self.add_metal_type_dialog_button)
+        self.ui.unload_storage_excel_button.clicked.connect(self.unload_storage_to_excel_button_slot)
 
     @Slot()
     def back_button_slot(self):
@@ -58,6 +60,16 @@ class StorageFrame(QFrame):
     @Slot()
     def add_metal_type_dialog_button(self):
         self.add_metal_type_dialog.exec()
+
+    @Slot()
+    def unload_storage_to_excel_button_slot(self):
+        data = [[self.ui.type_metall_label_2.text(),
+                 self.ui.size_mm_label.text(),
+                 self.ui.balance_kg_label.text(),
+                 self.ui.balance_mm_label.text()]]
+        data.extend([x[1:] for x in self.table_model._data])
+        unload_storage_to_excel(self.storage_excel_folder, data)
+        print('Склад выгружен!')
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data: list[list], db: Database):
@@ -134,6 +146,8 @@ class InOutStorageDialog(QDialog):
     def type_metal_combo_box_chosen(self):
         self.ui.size_combo_box.clear()
         type_metal = self.ui.type_metall_combo_box.currentText()
+        if type_metal == '':
+            return
         if 'гайка' in type_metal.lower():
             self.ui.size_combo_box.setEnabled(False)
             self.ui.kg_sht_label.setText('ШТ')
@@ -156,7 +170,7 @@ class InOutStorageDialog(QDialog):
                     new_balance_kg_sht = current_balance_kg_sht + spin_box_value
                 else:
                     new_balance_kg_sht = current_balance_kg_sht - spin_box_value
-                self.model.setData(self.model.index(row, 2 + 1), new_balance_kg_sht)
+                self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
                 self.db.update_storage_table_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
             else:
                 current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
@@ -187,7 +201,7 @@ class InOutStorageDialog(QDialog):
             d_external = float(size)
             d_internal = 0
         s = 3.14 * ((d_external / 2)**2 - (d_internal / 2)**2)
-        l = round(m/(7850*s), 2)
+        l = round(m/(7850*s) * 1000, 3)
         return l
 
 class AddNewMetalTypeDialog(QDialog):
@@ -203,13 +217,13 @@ class AddNewMetalTypeDialog(QDialog):
         self.setWindowModality(Qt.ApplicationModal)
         self.setWindowTitle('Добавить вид металла')
 
-        self.ui.type_metall_combo_box.addItems(['Труба', 'Круг'])
+        self.ui.type_metall_combo_box.addItems(['Труба', 'Круг', 'Гайка'])
 
         self.regex_krug = QRegularExpression(r"^[1-9]\d*$")
-        self.validator_krug = QRegularExpressionValidator(self.regex_krug)
-
         self.regex_truba = QRegularExpression(r"^[1-9]\d*[xXхХ][1-9]\d*$")
-        self.validator_truba = QRegularExpressionValidator(self.regex_truba)
+        self.regex_all = QRegularExpression()
+        self.lineedit_validator = QRegularExpressionValidator(self.regex_truba)
+        self.ui.lineEdit.setValidator(self.lineedit_validator)
 
         self.ui.ok_button_2.clicked.connect(self.add_button_slot)
         self.ui.type_metall_combo_box.currentIndexChanged.connect(self.type_metal_combo_box_chosen)
@@ -227,7 +241,10 @@ class AddNewMetalTypeDialog(QDialog):
                 self.db.insert_row_storage_table(type_metal, size)
                 self.model.insertRows(self.model.rowCount(), 1)
                 self.in_out_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
+                self.in_out_dialog.ui.type_metall_combo_box.clear()
+                self.in_out_dialog.ui.type_metall_combo_box.addItems(list(self.in_out_dialog._metal_data.keys()))
                 self.main_window.products_db_frame.add_new_product_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
+                self.ui.lineEdit.setText('')
                 print('Запись добавлена!')
                 self.close()
             else:
@@ -237,11 +254,17 @@ class AddNewMetalTypeDialog(QDialog):
 
     @Slot()
     def type_metal_combo_box_chosen(self):
+        self.ui.lineEdit.setText('')
         current_text = self.ui.type_metall_combo_box.currentText()
         if current_text == 'Труба':
-            self.ui.lineEdit.setValidator(self.validator_truba)
+            self.ui.label.setText('Размер, мм')
+            self.lineedit_validator.setRegularExpression(self.regex_truba)
+        elif current_text == 'Круг':
+            self.ui.label.setText('Размер, мм')
+            self.lineedit_validator.setRegularExpression(self.regex_krug)
         else:
-            self.ui.lineEdit.setValidator(self.validator_krug)
+            self.ui.label.setText('Вид гайки')
+            self.lineedit_validator.setRegularExpression(self.regex_all)
 
 
 class NegativeNumberDelegate(QStyledItemDelegate):

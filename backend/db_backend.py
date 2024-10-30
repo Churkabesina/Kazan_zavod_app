@@ -5,18 +5,21 @@ from os.path import exists
 from PySide6 import QtSql
 
 class Database:
-    def __init__(self, db_driver: str, db_path: str):
+    def __init__(self, db_driver: str, db_folder: str):
         """
         db_driver - QSQLITE, ,mysql, pgsql...
         db - открытие закрытие подключения через него
         """
         self.db_driver = db_driver
-        self.db_path = db_path + r'/database.db'
+        self.db_folder = db_folder
+        self.db_path = self.db_folder + r'/database.db'
         self.db = QtSql.QSqlDatabase.addDatabase(self.db_driver)
         self.db.setDatabaseName(self.db_path)
 
     def create_db(self):
         """Проверка существования и создание базы данных"""
+        if not os.path.exists(self.db_folder):
+            os.mkdir(self.db_folder)
         if not os.path.exists(self.db_path):
             if not self.db.open():
                 print(f"Ошибка при создании базы данных: {self.db.lastError().text()}")
@@ -77,19 +80,19 @@ class Database:
             self._exec_sql_statement(query, sql_table_deals)
             self._exec_sql_statement(query, sql_table_leads)
 
-            add_base_metal_1 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2" 2АУ.21.003', NULL, 0, NULL)'''
-            add_base_metal_2 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2.5" 2АУ.21.003-10', NULL, 0, NULL)'''
-            add_base_metal_3 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 3" 2АУ.21.003-20', NULL, 0, NULL)'''
-            add_base_metal_4 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 70 Мпа 2АУ21003-40', NULL, 0, NULL)'''
-            add_base_metal_5 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 2уха 4.320', NULL, 0, NULL)'''
-            add_base_metal_6 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 3уха 4.14.002', NULL, 0, NULL)'''
+            # add_base_metal_1 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2" 2АУ.21.003', NULL, 0, NULL)'''
+            # add_base_metal_2 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 2.5" 2АУ.21.003-10', NULL, 0, NULL)'''
+            # add_base_metal_3 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 3" 2АУ.21.003-20', NULL, 0, NULL)'''
+            # add_base_metal_4 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 70 Мпа 2АУ21003-40', NULL, 0, NULL)'''
+            # add_base_metal_5 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 2уха 4.320', NULL, 0, NULL)'''
+            # add_base_metal_6 = '''INSERT INTO storage (type_metal, size, balance_kg, balance_mm) VALUES ('Гайка 4" 3уха 4.14.002', NULL, 0, NULL)'''
 
-            self._exec_sql_statement(query, add_base_metal_1)
-            self._exec_sql_statement(query, add_base_metal_2)
-            self._exec_sql_statement(query, add_base_metal_3)
-            self._exec_sql_statement(query, add_base_metal_4)
-            self._exec_sql_statement(query, add_base_metal_5)
-            self._exec_sql_statement(query, add_base_metal_6)
+            # self._exec_sql_statement(query, add_base_metal_1)
+            # self._exec_sql_statement(query, add_base_metal_2)
+            # self._exec_sql_statement(query, add_base_metal_3)
+            # self._exec_sql_statement(query, add_base_metal_4)
+            # self._exec_sql_statement(query, add_base_metal_5)
+            # self._exec_sql_statement(query, add_base_metal_6)
 
             self.db.close()
 
