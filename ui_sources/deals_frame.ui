@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>storage_frame</class>
- <widget class="QFrame" name="storage_frame">
+ <class>deals_frame</class>
+ <widget class="QFrame" name="deals_frame">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -30,9 +30,9 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="frame_layout" stretch="1,1,14,2,2">
+    <layout class="QVBoxLayout" name="frame_layout" stretch="1,1,14,2">
      <property name="spacing">
-      <number>0</number>
+      <number>6</number>
      </property>
      <property name="topMargin">
       <number>0</number>
@@ -74,7 +74,7 @@
        <item>
         <widget class="QLabel" name="frame_name_label">
          <property name="text">
-          <string>СКЛАД</string>
+          <string>Счета</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -97,14 +97,11 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="labels_layout" stretch="2,2,2,2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
+      <layout class="QHBoxLayout" name="labels_layout" stretch="0,0,0,0,0,0,0,0,0,0,0">
        <item>
-        <widget class="QLabel" name="type_metall_label_2">
+        <widget class="QLabel" name="num_label">
          <property name="text">
-          <string>ВИД МЕТАЛЛА</string>
+          <string>№</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -112,9 +109,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="size_mm_label">
+        <widget class="QLabel" name="date_label">
          <property name="text">
-          <string>РАЗМЕР, ММ</string>
+          <string>ДАТА</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -122,9 +119,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="balance_kg_label">
+        <widget class="QLabel" name="product_label">
          <property name="text">
-          <string>ОСТАТОК, КГ/ШТ</string>
+          <string>ПРОДУКЦИЯ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -132,85 +129,94 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="balance_mm_label">
+        <widget class="QLabel" name="count_product_label">
          <property name="text">
-          <string>ОСТАТОК, ММ</string>
+          <string>КОЛ-ВО ИЗДЕЛИЙ</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="type_metall_label">
+         <property name="text">
+          <string>ТИП МЕТАЛЛА</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="steel_mark_label">
+         <property name="text">
+          <string>МАРКА СТАЛИ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="diameter_label">
+         <property name="text">
+          <string>ДИАМЕТР, ММ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lenght_label">
+         <property name="text">
+          <string>ДЛИНА, ММ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="weight_label">
+         <property name="text">
+          <string>ОБЩИЙ ВЕС(КГ)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="draw_label">
+         <property name="text">
+          <string>ЧЕРТЕЖ</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="balance_metal_label">
+         <property name="text">
+          <string>НАЛИЧИЕ МЕТАЛЛА</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QTableView" name="storage_db_table"/>
+      <widget class="QTableView" name="deals_table"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="buttons_layout" stretch="1,1">
+      <layout class="QHBoxLayout" name="group_and_unload_layout" stretch="5,5">
        <property name="spacing">
-        <number>10</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="in_storage_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>+</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="out_storage_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>-</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="pdf_layout" stretch="0,0,0">
-       <property name="spacing">
-        <number>10</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="add_type_metal_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Добавить вид металла</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="unload_storage_excel_button">
+        <widget class="QPushButton" name="group_deals_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -230,12 +236,12 @@
           </size>
          </property>
          <property name="text">
-          <string>Выгрузить в EXCEL</string>
+          <string>Сгруппировать</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="del_type_metal_button">
+        <widget class="QPushButton" name="export_excel_deals_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -243,7 +249,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Удалить вид металла</string>
+          <string>Выгрузить в EXCEL?</string>
          </property>
         </widget>
        </item>

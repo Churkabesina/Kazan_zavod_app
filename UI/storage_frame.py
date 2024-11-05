@@ -2,7 +2,7 @@ import sys
 
 from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex, QRegularExpression
 from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
-from PySide6.QtWidgets import QFrame, QStyledItemDelegate, QDialog
+from PySide6.QtWidgets import QFrame, QStyledItemDelegate, QDialog, QMessageBox
 
 from UI.extended_UI import ExtendedUIStorageFrame
 from backend.db_backend import Database
@@ -37,6 +37,7 @@ class StorageFrame(QFrame):
         self.ui.out_storage_button.clicked.connect(self.out_storage_button_slot)
         self.ui.add_type_metal_button.clicked.connect(self.add_metal_type_dialog_button)
         self.ui.unload_storage_excel_button.clicked.connect(self.unload_storage_to_excel_button_slot)
+        self.ui.del_type_metal_button.clicked.connect(self.del_selected_metal_type_button)
 
     @Slot()
     def back_button_slot(self):
@@ -60,6 +61,31 @@ class StorageFrame(QFrame):
     @Slot()
     def add_metal_type_dialog_button(self):
         self.add_metal_type_dialog.exec()
+
+    @Slot()
+    def del_selected_metal_type_button(self):
+        selected_indexes = self.ui.storage_db_table.selectedIndexes()
+        if selected_indexes:
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Icon.Question)
+            msg_box.setWindowTitle("Подтверждение")
+            msg_box.setText("Вы уверены, что хотите выполнить это действие?")
+            button_yes = msg_box.addButton("Да", QMessageBox.ButtonRole.YesRole)
+            button_no = msg_box.addButton("Нет", QMessageBox.ButtonRole.NoRole)
+            msg_box.setDefaultButton(button_no)
+            msg_box.exec()
+            if msg_box.clickedButton() == button_yes:
+                print("Действие подтверждено!")
+                rows = sorted({index.row() for index in selected_indexes})
+                for row in reversed(rows):
+                    cell_index = self.table_model.index(row, 0)
+                    id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
+                    self.table_model.removeRows(row, 1)
+                    self.db.del_metal_type_storage_table_by_id(id_from_cell)
+                self.main_window.products_db_frame.add_new_product_dialog.update_type_metal_combobox()
+                print('Записи удалены!')
+            else:
+                print("Действие отменено")
 
     @Slot()
     def unload_storage_to_excel_button_slot(self):
@@ -91,6 +117,8 @@ class TableModel(QAbstractTableModel):
         col = index.column()
         if role == Qt.DisplayRole:
             return str(self._data[row][col])
+        if role == Qt.UserRole:
+            return self._data[row][0]
 
     def setData(self, index, value, role=Qt.EditRole):
         if role == Qt.EditRole:
@@ -235,22 +263,26 @@ class AddNewMetalTypeDialog(QDialog):
         type_metal = self.ui.type_metall_combo_box.currentText()
         size = self.ui.lineEdit.text()
         if size != '':
+            if self.ui.type_metall_combo_box.currentIndex() == 2:
+                type_metal = type_metal + ' ' + size
+                size = None
             if not self.db.check_metal_exists_storage_table(type_metal, size):
                 # русская х в англ. x
-                size = size.lower().replace('х', 'x')
+                if self.ui.type_metall_combo_box.currentIndex() != 2:
+                    size = size.lower().replace('х', 'x')
                 self.db.insert_row_storage_table(type_metal, size)
                 self.model.insertRows(self.model.rowCount(), 1)
                 self.in_out_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
                 self.in_out_dialog.ui.type_metall_combo_box.clear()
                 self.in_out_dialog.ui.type_metall_combo_box.addItems(list(self.in_out_dialog._metal_data.keys()))
-                self.main_window.products_db_frame.add_new_product_dialog._metal_data = self.db.select_storage_table_type_metal_and_size()
+                self.main_window.products_db_frame.add_new_product_dialog.update_type_metal_combobox()
                 self.ui.lineEdit.setText('')
                 print('Запись добавлена!')
                 self.close()
             else:
                 print('Такой металл уже существует')
         else:
-            print('Нужно ввести размер')
+            print('Нужно ввести размер или название гайки')
 
     @Slot()
     def type_metal_combo_box_chosen(self):

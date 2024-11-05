@@ -1,4 +1,3 @@
-import os.path
 import sys
 
 from PySide6.QtCore import QFile
@@ -13,6 +12,7 @@ from UI.products_frame import ProductsFrame
 from UI.leads_frame import LeadsFrame
 from UI.storage_frame import StorageFrame
 from UI.products_db_frame import ProductsDBFrame
+from UI.deals_frame import DealsFrame
 
 
 class MainWindow(QMainWindow):
@@ -26,15 +26,18 @@ class MainWindow(QMainWindow):
         self.products_frame = ProductsFrame(self, DB, TEMP_PRODUCTS_PDF_FOLDER, DRAWS_FOLDER)
         self.storage_frame = StorageFrame(self, DB, STORAGE_EXCEL_FOLDER)
         self.products_db_frame = ProductsDBFrame(self, DB, DRAWS_FOLDER)
+        self.deals_frame = DealsFrame(self, DB)
 
         self.ui.centralwidget.layout().addWidget(self.storage_frame)
         self.ui.centralwidget.layout().addWidget(self.products_frame)
         self.ui.centralwidget.layout().addWidget(self.products_db_frame)
+        self.ui.centralwidget.layout().addWidget(self.deals_frame)
         self.ui.centralwidget.layout().addWidget(self.leads_frame)
 
         self.storage_frame.hide()
         self.products_frame.hide()
         self.products_db_frame.hide()
+        self.deals_frame.hide()
         self.leads_frame.show()
 
 

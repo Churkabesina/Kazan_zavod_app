@@ -1,6 +1,5 @@
 import os
 import sys
-from os.path import exists
 
 from PySide6 import QtSql
 
@@ -67,11 +66,27 @@ class Database:
                                         );
                                         '''
             ##### счета
-            sql_table_deals = '''CREATE TABLE IF NOT EXISTS products_four (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
+            sql_table_deals = '''
+                                CREATE TABLE IF NOT EXISTS deals (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                № INTEGER NOT NULL,
+                                date TEXT NOT NULL,
+                                product TEXT NOT NULL,
+                                count INTEGER NOT NULL,
+                                type_metal TEXT NOT NULL,
+                                mark_steel TEXT,
+                                diameter TEXT,
+                                lenght REAL,
+                                total_weight REAL,
+                                draw TEXT
+                                );
+                                '''
             ##### главный экран
-            sql_table_leads = '''CREATE TABLE IF NOT EXISTS products_four (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price REAL)'''
+            sql_table_leads = '''
+                                CREATE TABLE IF NOT EXISTS leads (
+                                id INTEGER PRIMARY KEY
+                                );
+                                '''
 
             # sqllite не умеет в много запросность
             self._exec_sql_statement(query, sql_table_storage)
@@ -363,5 +378,30 @@ class Database:
         self._exec_sql_statement(query, statement)
         query.next()
         selected_data = [query.value(x) for x in range(query.record().count())]
+        self.db.close()
+        return selected_data
+
+    def del_metal_type_storage_table_by_id(self, _id: int):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''DELETE FROM storage WHERE id = ?'''
+        query.prepare(statement)
+        query.bindValue(0, _id)
+        self._exec_sql_statement(query)
+        self.db.close()
+    ### методы к таблице склада - STORAGE TABLE
+
+    ### методы к таблице счетов - DEALS TABLE
+    def select_deals_table_rows(self) -> dict[str, dict]:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM deals'''
+        self._exec_sql_statement(query, statement)
+        selected_data = {}
+        while query.next():
+            if query.value(1) not in selected_data:
+                selected_data[query.value(1)] = {'date': query.value(2), 'rows': [[query.value(x) for x in range(query.record().count()) if x != 1 and x != 2]]}
+            else:
+                selected_data[query.value(1)]['rows'].append([query.value(x) for x in range(query.record().count()) if x != 1 and x != 2])
         self.db.close()
         return selected_data

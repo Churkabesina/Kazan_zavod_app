@@ -56,7 +56,7 @@ class ProductsDBFrame(QFrame):
                 print("Действие подтверждено!")
                 rows = sorted({index.row() for index in selected_indexes})
                 for row in reversed(rows):
-                    cell_index = self.table_model.index(row, 1)
+                    cell_index = self.table_model.index(row, 0)
                     id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
                     self.table_model.removeRows(row, 1)
                     self.db.del_product_products_db_by_id(id_from_cell)
@@ -126,6 +126,7 @@ class AddNewProductDialog(QDialog):
 
         self._metal_data = self.db.select_storage_table_type_metal_and_size()
         self.ui.type_metall_combo_box.addItems(list(self._metal_data.keys()))
+        self.ui.type_metall_combo_box.setCurrentIndex(-1)
 
         self.line_edit_lenght_regex = QRegularExpression(r"^\d+\.\d+$")
         self.line_edit_lenght_validator = QRegularExpressionValidator(self.line_edit_lenght_regex)
@@ -135,57 +136,62 @@ class AddNewProductDialog(QDialog):
         self.ui.type_metall_combo_box.currentIndexChanged.connect(self.type_metal_combo_box_chosen)
         self.ui.choose_draw_button.clicked.connect(self.choose_draw_button_slot)
 
-        self.ui.type_metall_combo_box.setCurrentIndex(1)
 
     @Slot()
     def ok_button_slot(self):
-        product_name = self.ui.product_name_line_edit.text()
-        type_metal = self.ui.type_metall_combo_box.currentText()
-        mark_steel = self.ui.mark_steel_line_edit.text()
-        if mark_steel == '':
-            mark_steel = None
-        diameter = self.ui.diamiter_combo_box.currentText()
-        lenght = self.ui.lenght_line_edit.text()
-        if lenght == '':
-            lenght = None
-        draw = self.ui.choose_draw_button.text()
-        if draw == '':
-            draw = None
-        if product_name != '':
-            if not self.db.check_product_exists_products_db(product_name):
-                if 'гайка' not in type_metal.lower():
-                    if lenght:
-                        weight = self.calculate_product_weight(type_metal, diameter, float(lenght))
-                        self.db.insert_product_products_db(product_name, type_metal, mark_steel, diameter, float(lenght), weight, draw)
+        if self.ui.type_metall_combo_box.currentIndex() != -1:
+            product_name = self.ui.product_name_line_edit.text()
+            type_metal = self.ui.type_metall_combo_box.currentText()
+            mark_steel = self.ui.mark_steel_line_edit.text()
+            if mark_steel == '':
+                mark_steel = None
+            diameter = self.ui.diamiter_combo_box.currentText()
+            lenght = self.ui.lenght_line_edit.text()
+            if lenght == '':
+                lenght = None
+            draw = self.ui.choose_draw_button.text()
+            if draw == '':
+                draw = None
+            if product_name != '':
+                if not self.db.check_product_exists_products_db(product_name):
+                    if 'гайка' not in type_metal.lower():
+                        if lenght:
+                            weight = self.calculate_product_weight(type_metal, diameter, float(lenght))
+                            self.db.insert_product_products_db(product_name, type_metal, mark_steel, diameter, float(lenght), weight, draw)
+                        else:
+                            print('Для этого типа металла нужно ввести длину')
+                            return
                     else:
-                        print('Для этого типа металла нужно ввести длину')
+                        weight = None
+                        self.db.insert_product_products_db(product_name, type_metal, mark_steel, diameter, lenght, weight, draw)
+                    self.model.insertRows(self.model.rowCount(), 1)
+                    self.main_window.products_frame.delegate.items.append(product_name)
+                    if draw:
+                        copy_pdf_to_draws_folder(self.chosen_draw_path, os.path.abspath(self.draws_folder))
+                        self.ui.choose_draw_button.setText('')
+                        self.chosen_draw_path = None
+                    self.close()
+                    print('Запись добавлена!')
                 else:
-                    weight = None
-                    self.db.insert_product_products_db(product_name, type_metal, mark_steel, diameter, lenght, weight, draw)
-                self.model.insertRows(self.model.rowCount(), 1)
-                self.main_window.products_frame.delegate.items.append(product_name)
-                if draw:
-                    copy_pdf_to_draws_folder(self.chosen_draw_path, os.path.abspath(self.draws_folder))
-                    self.ui.choose_draw_button.setText('')
-                    self.chosen_draw_path = None
-                self.close()
-                print('Запись добавлена!')
+                    print('Такой продукт уже существует')
             else:
-                print('Такой продукт уже существует')
+                print('Нужно ввести название продукта')
         else:
-            print('Нужно ввести название продукта')
+            print('Нужно выбрать тип металла')
 
     @Slot()
     def type_metal_combo_box_chosen(self):
         self.ui.diamiter_combo_box.clear()
-        type_metal = self.ui.type_metall_combo_box.currentText()
-        if 'гайка' in type_metal.lower():
-            self.ui.diamiter_combo_box.setEnabled(False)
-            self.ui.lenght_line_edit.setEnabled(False)
-        else:
-            self.ui.diamiter_combo_box.setEnabled(True)
-            self.ui.lenght_line_edit.setEnabled(True)
-            self.ui.diamiter_combo_box.addItems(self._metal_data[type_metal])
+        if self.ui.type_metall_combo_box.currentIndex() != -1:
+            self.ui.lenght_line_edit.setText('')
+            type_metal = self.ui.type_metall_combo_box.currentText()
+            if 'гайка' in type_metal.lower():
+                self.ui.diamiter_combo_box.setEnabled(False)
+                self.ui.lenght_line_edit.setEnabled(False)
+            else:
+                self.ui.diamiter_combo_box.setEnabled(True)
+                self.ui.lenght_line_edit.setEnabled(True)
+                self.ui.diamiter_combo_box.addItems(self._metal_data[type_metal])
 
     @Slot()
     def choose_draw_button_slot(self):
@@ -214,3 +220,8 @@ class AddNewProductDialog(QDialog):
             l = lenght
             m = round(6.169315*d**2*l/10**6, 2)
             return m
+
+    def update_type_metal_combobox(self):
+        self.ui.type_metall_combo_box.clear()
+        self._metal_data = self.db.select_storage_table_type_metal_and_size()
+        self.ui.type_metall_combo_box.addItems(list(self._metal_data.keys()))
