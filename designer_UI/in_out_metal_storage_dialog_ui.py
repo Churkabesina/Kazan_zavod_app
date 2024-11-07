@@ -123,7 +123,7 @@ class Ui_in_out_metal_storage_dialog(object):
 
         self.ok_button = QPushButton(in_out_metal_storage_dialog)
         self.ok_button.setObjectName(u"ok_button")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.ok_button.sizePolicy().hasHeightForWidth())
@@ -135,6 +135,9 @@ class Ui_in_out_metal_storage_dialog(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
 
+        self.horizontalLayout_3.setStretch(0, 4)
+        self.horizontalLayout_3.setStretch(1, 2)
+        self.horizontalLayout_3.setStretch(2, 4)
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 

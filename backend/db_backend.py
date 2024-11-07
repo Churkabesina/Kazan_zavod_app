@@ -451,16 +451,57 @@ class Database:
         _exists = query.value(0)
         self.db.close()
         return bool(_exists)
+
+    def select_uniques_products_deals_table(self) -> list[str]:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT DISTINCT product FROM deals'''
+        self._exec_sql_statement(query, statement)
+        selected_data = []
+        while query.next():
+            selected_data.append(query.value(0))
+        self.db.close()
+        print(selected_data)
+        return selected_data
+
+    def del_deals_table_all_rows(self):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''DELETE FROM deals'''
+        self._exec_sql_statement(query, statement)
+        self.db.close()
     ### методы к таблице счетов - DEALS TABLE
 
     ### методы к таблице заявок - LEADS TABLE
     def select_leads_table_rows(self) -> list[list]:
         self._open_db()
         query = QtSql.QSqlQuery()
-        statement = '''SELECT * FROM deals ORDER BY №'''
+        statement = '''SELECT * FROM leads ORDER BY №'''
         self._exec_sql_statement(query, statement)
         selected_data = []
         while query.next():
             selected_data.append([query.value(x) for x in range(query.record().count())])
         self.db.close()
         return selected_data
+
+    def check_lead_num_exists_leads_table(self, lead_num: int) -> bool:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT 1 FROM leads WHERE № = ?'''
+        query.prepare(statement)
+        query.bindValue(0, lead_num)
+        self._exec_sql_statement(query)
+        query.next()
+        _exists = query.value(0)
+        self.db.close()
+        return bool(_exists)
+
+    def insert_row_leads_table(self, row: list):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''INSERT INTO leads (№, date, product, count, type_metal, mark_steel, diameter, lenght, total_weight, draw) VALUES (?,?,?,?,?,?,?,?,?,?)'''
+        query.prepare(statement)
+        for x in range(len(row)):
+            query.bindValue(x, row[x])
+        self._exec_sql_statement(query)
+        self.db.close()

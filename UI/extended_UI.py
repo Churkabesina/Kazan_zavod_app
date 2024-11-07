@@ -2,6 +2,7 @@ from designer_UI.products_db_frame_ui import Ui_products_db_frame
 from designer_UI.products_frame_ui import Ui_products_frame
 from designer_UI.storage_frame_ui import Ui_storage_frame
 from designer_UI.deals_frame_ui import Ui_deals_frame
+from designer_UI.leads_frame_ui import Ui_leads_frame
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtCore import Qt
 
@@ -50,3 +51,14 @@ class ExtendedUIDealsFrame(Ui_deals_frame):
         self.deals_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         self.deals_table.verticalHeader().setDefaultSectionSize(40)
+
+class ExtendedUILeadsFrame(Ui_leads_frame):
+    def setupUi(self, storage_frame):
+        super().setupUi(storage_frame)
+        # отключение названий строк и стобцов в TableView
+        self.leads_table.verticalHeader().setVisible(False)
+        self.leads_table.horizontalHeader().setVisible(False)
+        # растяжение на все пространство по горизонту
+        self.leads_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        self.leads_table.verticalHeader().setDefaultSectionSize(40)

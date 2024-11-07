@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_main_window()
         self.ui.setupUi(self)
 
-        self.leads_frame = LeadsFrame(self)
+        self.leads_frame = LeadsFrame(self, DB)
         self.products_frame = ProductsFrame(self, DB, TEMP_PRODUCTS_PDF_FOLDER, DRAWS_FOLDER)
         self.storage_frame = StorageFrame(self, DB, STORAGE_EXCEL_FOLDER)
         self.products_db_frame = ProductsDBFrame(self, DB, DRAWS_FOLDER)
@@ -49,10 +49,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # unreal_stylesheet.setup()
-    # qss_file = QFile("style.qss")
-    # qss_file.open(QFile.OpenMode.ReadOnly | QFile.OpenMode.Text)
-    # app.setStyleSheet(qss_file.readAll().data().decode())
-    # qss_file.close()
+    qss_file = QFile("style.qss")
+    qss_file.open(QFile.OpenMode.ReadOnly | QFile.OpenMode.Text)
+    app.setStyleSheet(qss_file.readAll().data().decode())
+    qss_file.close()
     # app.setStyleSheet('''QFrame {background-color: gray;} QTableView {background-color: white;} QPushButton {background-color: white;} QListView {background-color: white;} QMessageBox {background-color: white;}''')
 
     DB = Database(cfg['DB']['db_name'], cfg['DB']['db_folder'])

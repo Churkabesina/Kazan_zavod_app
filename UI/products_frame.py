@@ -59,7 +59,7 @@ class ProductsFrame(QFrame):
                             self.main_window.storage_frame.in_out_dialog.out_metal_from_other_frame(valid_row[-6], valid_row[-4], valid_row[-2])
                         self.db.insert_row_deals_table(valid_row)
                     self.main_window.deals_frame.update_model_data()
-                    # self.main_window.leads_frame.update_model_data()
+                    self.main_window.leads_frame.update_model_data()
                     self.table_model.removeRows(0, self.table_model.rowCount())
                     self.db.del_temp_table_all_rows()
                 else:

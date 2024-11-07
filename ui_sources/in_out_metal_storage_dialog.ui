@@ -175,7 +175,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="4,2,4">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -192,7 +192,7 @@
      <item>
       <widget class="QPushButton" name="ok_button">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>

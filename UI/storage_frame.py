@@ -64,28 +64,29 @@ class StorageFrame(QFrame):
 
     @Slot()
     def del_selected_metal_type_button(self):
-        selected_indexes = self.ui.storage_db_table.selectedIndexes()
-        if selected_indexes:
-            msg_box = QMessageBox(self)
-            msg_box.setIcon(QMessageBox.Icon.Question)
-            msg_box.setWindowTitle("Подтверждение")
-            msg_box.setText("Вы уверены, что хотите выполнить это действие?")
-            button_yes = msg_box.addButton("Да", QMessageBox.ButtonRole.YesRole)
-            button_no = msg_box.addButton("Нет", QMessageBox.ButtonRole.NoRole)
-            msg_box.setDefaultButton(button_no)
-            msg_box.exec()
-            if msg_box.clickedButton() == button_yes:
-                print("Действие подтверждено!")
-                rows = sorted({index.row() for index in selected_indexes})
-                for row in reversed(rows):
-                    cell_index = self.table_model.index(row, 0)
-                    id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
-                    self.table_model.removeRows(row, 1)
-                    self.db.del_metal_type_storage_table_by_id(id_from_cell)
-                self.main_window.products_db_frame.add_new_product_dialog.update_type_metal_combobox()
-                print('Записи удалены!')
-            else:
-                print("Действие отменено")
+        print('заглушка')
+        # selected_indexes = self.ui.storage_db_table.selectedIndexes()
+        # if selected_indexes:
+        #     msg_box = QMessageBox(self)
+        #     msg_box.setIcon(QMessageBox.Icon.Question)
+        #     msg_box.setWindowTitle("Подтверждение")
+        #     msg_box.setText("Вы уверены, что хотите выполнить это действие?")
+        #     button_yes = msg_box.addButton("Да", QMessageBox.ButtonRole.YesRole)
+        #     button_no = msg_box.addButton("Нет", QMessageBox.ButtonRole.NoRole)
+        #     msg_box.setDefaultButton(button_no)
+        #     msg_box.exec()
+        #     if msg_box.clickedButton() == button_yes:
+        #         print("Действие подтверждено!")
+        #         rows = sorted({index.row() for index in selected_indexes})
+        #         for row in reversed(rows):
+        #             cell_index = self.table_model.index(row, 0)
+        #             id_from_cell = self.table_model.data(cell_index, role=Qt.UserRole)
+        #             self.table_model.removeRows(row, 1)
+        #             self.db.del_metal_type_storage_table_by_id(id_from_cell)
+        #         self.main_window.products_db_frame.add_new_product_dialog.update_type_metal_combobox()
+        #         print('Записи удалены!')
+        #     else:
+        #         print("Действие отменено")
 
     @Slot()
     def unload_storage_to_excel_button_slot(self):
@@ -164,12 +165,12 @@ class InOutStorageDialog(QDialog):
 
         self._metal_data = self.db.select_storage_table_type_metal_and_size()
         self.ui.type_metall_combo_box.addItems(list(self._metal_data.keys()))
+        self.ui.type_metall_combo_box.setCurrentIndex(-1)
         self.is_input_dialog = True # флаг для понятия окно расхода или прихода
 
         self.ui.type_metall_combo_box.currentIndexChanged.connect(self.type_metal_combo_box_chosen)
         self.ui.ok_button.clicked.connect(self.ok_button_click)
 
-        self.ui.type_metall_combo_box.setCurrentIndex(1)
 
     @Slot()
     def type_metal_combo_box_chosen(self):
@@ -187,35 +188,39 @@ class InOutStorageDialog(QDialog):
 
     @Slot()
     def ok_button_click(self):
-        type_metal = self.ui.type_metall_combo_box.currentText()
-        size = self.ui.size_combo_box.currentText()
-        spin_box_value = float(self.ui.balance_double_spin_box.value())
-        _id = self._metal_data[type_metal][size]
-        if spin_box_value != 0:
-            row = self.model.find_row_by_id(_id)
-            if 'гайка' in type_metal.lower():
-                current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
-                if self.is_input_dialog:
-                    new_balance_kg_sht = current_balance_kg_sht + spin_box_value
+        if self.ui.type_metall_combo_box.currentIndex() != -1:
+            type_metal = self.ui.type_metall_combo_box.currentText()
+            size = self.ui.size_combo_box.currentText()
+            spin_box_value = float(self.ui.balance_double_spin_box.value())
+            _id = self._metal_data[type_metal][size]
+            if spin_box_value != 0:
+                row = self.model.find_row_by_id(_id)
+                if 'гайка' in type_metal.lower():
+                    current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
+                    if self.is_input_dialog:
+                        new_balance_kg_sht = current_balance_kg_sht + spin_box_value
+                    else:
+                        new_balance_kg_sht = current_balance_kg_sht - spin_box_value
+                    self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
+                    self.db.update_storage_table_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
                 else:
-                    new_balance_kg_sht = current_balance_kg_sht - spin_box_value
-                self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
-                self.db.update_storage_table_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
+                    current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
+                    if self.is_input_dialog:
+                        new_balance_kg_sht = current_balance_kg_sht + spin_box_value
+                    else:
+                        new_balance_kg_sht = current_balance_kg_sht - spin_box_value
+                    new_balance_mm = self.balance_in_mm_formula(type_metal, size, new_balance_kg_sht)
+                    self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
+                    self.model.setData(self.model.index(row, 4), new_balance_mm)
+                    self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
+                print('Данные обновлены!')
+                self.main_window.deals_frame.update_model_data()
+                self.main_window.leads_frame.update_model_data()
+                self.close()
             else:
-                current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
-                if self.is_input_dialog:
-                    new_balance_kg_sht = current_balance_kg_sht + spin_box_value
-                else:
-                    new_balance_kg_sht = current_balance_kg_sht - spin_box_value
-                new_balance_mm = self.balance_in_mm_formula(type_metal, size, new_balance_kg_sht)
-                self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
-                self.model.setData(self.model.index(row, 4), new_balance_mm)
-                self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
-            print('Данные обновлены!')
-            self.close()
-            self.main_window.deals_frame.update_model_data()
+                print('Невозможно добавить/убавить ноль')
         else:
-            print('Невозможно добавить/убавить ноль')
+            print('Некорректный индекс комбобокса')
 
     def out_metal_from_other_frame(self, type_metal, size, out_balance):
         type_metal = type_metal
@@ -241,11 +246,8 @@ class InOutStorageDialog(QDialog):
         m = float(kg_balance)
         if type_metal.lower() == 'труба':
             size_split = size.split('x')
-            print(size_split)
             d_external = float(size_split[0])
-            print(d_external)
             d_internal = d_external - (2*float(size_split[1]))
-            print(d_internal)
         else:
             d_external = float(size)
             d_internal = 0
