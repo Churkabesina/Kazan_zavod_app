@@ -1,10 +1,12 @@
 import os
-import sys
 
 from PySide6.QtCore import Qt, Slot, QAbstractTableModel, QModelIndex, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import QFrame, QComboBox, QStyledItemDelegate
+from PySide6.QtWidgets import QFrame, QComboBox, QStyledItemDelegate, QDialog
+from win32ctypes.pywin32.pywintypes import datetime
+
 from UI.extended_UI import ExtendedUIProductsFrame
+from designer_UI.set_deal_number_dialog_ui import Ui_set_deal_number_dialog
 from backend.backend import unload_products_temp_table_to_pdf
 from backend.db_backend import Database
 
@@ -24,6 +26,8 @@ class ProductsFrame(QFrame):
         self.ui.products_temp_table.setModel(self.table_model)
         self.ui.products_temp_table.horizontalHeader().hideSection(0)
 
+        self.set_deal_number_dialog = SetDealNumberDialog(self.db)
+
         # Создаем делегат с элементами для QComboBox
         self.items = self.db.select_all_products_products_db()
         self.delegate = ComboBoxDelegate(self.items, self.db, self.ui.products_temp_table)
@@ -38,6 +42,32 @@ class ProductsFrame(QFrame):
         self.ui.products_db_button.clicked.connect(self.products_db_button_slot)
         self.table_model.dataChanged.connect(self.products_count_changed)
         self.ui.pdf_products_button.clicked.connect(self.pdf_button_slot)
+        self.ui.send_to_deals_button.clicked.connect(self.send_to_deals_button_slot)
+
+    @Slot()
+    def send_to_deals_button_slot(self):
+        if self.table_model.rowCount() != 0:
+            rows = [row for row in self.table_model._data if row[1] != '' and row[2] != '']
+            if rows:
+                if self.set_deal_number_dialog.exec() == QDialog.DialogCode.Accepted:
+                    for row in rows:
+                        valid_row = [int(self.set_deal_number_dialog.deal_num), self.set_deal_number_dialog.date]
+                        valid_row.extend(row[1:])
+                        if 'гайка' in valid_row[-6].lower():
+                            self.main_window.storage_frame.in_out_dialog.out_metal_from_other_frame(valid_row[-6], valid_row[-4], valid_row[-7])
+                        else:
+                            self.main_window.storage_frame.in_out_dialog.out_metal_from_other_frame(valid_row[-6], valid_row[-4], valid_row[-2])
+                        self.db.insert_row_deals_table(valid_row)
+                    self.main_window.deals_frame.update_model_data()
+                    # self.main_window.leads_frame.update_model_data()
+                    self.table_model.removeRows(0, self.table_model.rowCount())
+                    self.db.del_temp_table_all_rows()
+                else:
+                    print('Диалоговое окно было закрыто без подтверждения')
+            else:
+                print('Нельзя отправить в изготовление только пустые продукции')
+        else:
+            print('Нельзя отправить ноль продукций в изготовление')
 
     @Slot()
     def products_count_changed(self, topLeft, bottomRight, roles):
@@ -219,3 +249,32 @@ class ComboBoxDelegate(QStyledItemDelegate):
         editor = self.sender()
         self.commitData.emit(editor)
         self.closeEditor.emit(editor)
+
+
+class SetDealNumberDialog(QDialog):
+    def __init__(self, db: Database):
+        super().__init__()
+
+        self.db = db
+        self.deal_num = None
+        self.date = datetime.today().strftime('%d.%m.%Y')
+        self.ui = Ui_set_deal_number_dialog()
+        self.ui.setupUi(self)
+        self.setWindowTitle('Выставить номер счета')
+
+        self.line_edit_regex = QRegularExpression(r"\d+")
+        self.line_edit_validator = QRegularExpressionValidator(self.line_edit_regex)
+        self.ui.num_lineedit.setValidator(self.line_edit_validator)
+
+        self.ui.ok_button.clicked.connect(self.ok_button_slot)
+
+    @Slot()
+    def ok_button_slot(self):
+        num = self.ui.num_lineedit.text()
+        if num != '' and not self.db.check_deal_num_exists_deals_table(int(num)):
+            self.deal_num = num
+            self.date = datetime.today().strftime('%d.%m.%Y')
+            self.ui.num_lineedit.clear()
+            self.accept()
+        else:
+            print('такой номер счета уже существует или введено пустое поле')

@@ -15,21 +15,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QTableView, QVBoxLayout, QWidget)
 
 class Ui_leads_frame(object):
     def setupUi(self, leads_frame):
         if not leads_frame.objectName():
             leads_frame.setObjectName(u"leads_frame")
-        leads_frame.resize(1133, 714)
+        leads_frame.resize(1360, 735)
         self.verticalLayout_2 = QVBoxLayout(leads_frame)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.frame_layout = QVBoxLayout()
-        self.frame_layout.setSpacing(0)
+        self.frame_layout.setSpacing(6)
         self.frame_layout.setObjectName(u"frame_layout")
         self.frame_layout.setContentsMargins(-1, -1, -1, 0)
         self.horizontalLayout = QHBoxLayout()
@@ -56,24 +56,81 @@ class Ui_leads_frame(object):
 
         self.frame_layout.addLayout(self.horizontalLayout)
 
-        self.scrollArea = QScrollArea(leads_frame)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1129, 523))
-        self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout_5.setSpacing(0)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.labels_layout = QHBoxLayout()
+        self.labels_layout.setObjectName(u"labels_layout")
+        self.num_label = QLabel(leads_frame)
+        self.num_label.setObjectName(u"num_label")
+        self.num_label.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_5.addLayout(self.verticalLayout_4)
+        self.labels_layout.addWidget(self.num_label)
 
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.date_label = QLabel(leads_frame)
+        self.date_label.setObjectName(u"date_label")
+        self.date_label.setAlignment(Qt.AlignCenter)
 
-        self.frame_layout.addWidget(self.scrollArea)
+        self.labels_layout.addWidget(self.date_label)
+
+        self.product_label = QLabel(leads_frame)
+        self.product_label.setObjectName(u"product_label")
+        self.product_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.product_label)
+
+        self.count_label = QLabel(leads_frame)
+        self.count_label.setObjectName(u"count_label")
+        self.count_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.count_label)
+
+        self.type_metal_label = QLabel(leads_frame)
+        self.type_metal_label.setObjectName(u"type_metal_label")
+        self.type_metal_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.type_metal_label)
+
+        self.mark_steel_label = QLabel(leads_frame)
+        self.mark_steel_label.setObjectName(u"mark_steel_label")
+        self.mark_steel_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.mark_steel_label)
+
+        self.diameter_label = QLabel(leads_frame)
+        self.diameter_label.setObjectName(u"diameter_label")
+        self.diameter_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.diameter_label)
+
+        self.lenght_label = QLabel(leads_frame)
+        self.lenght_label.setObjectName(u"lenght_label")
+        self.lenght_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.lenght_label)
+
+        self.total_weight_label = QLabel(leads_frame)
+        self.total_weight_label.setObjectName(u"total_weight_label")
+        self.total_weight_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.total_weight_label)
+
+        self.draw_label = QLabel(leads_frame)
+        self.draw_label.setObjectName(u"draw_label")
+        self.draw_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.draw_label)
+
+        self.metal_balance_label = QLabel(leads_frame)
+        self.metal_balance_label.setObjectName(u"metal_balance_label")
+        self.metal_balance_label.setAlignment(Qt.AlignCenter)
+
+        self.labels_layout.addWidget(self.metal_balance_label)
+
+
+        self.frame_layout.addLayout(self.labels_layout)
+
+        self.leads_table = QTableView(leads_frame)
+        self.leads_table.setObjectName(u"leads_table")
+
+        self.frame_layout.addWidget(self.leads_table)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setSpacing(6)
@@ -133,9 +190,10 @@ class Ui_leads_frame(object):
         self.frame_layout.addLayout(self.pdf_layout)
 
         self.frame_layout.setStretch(0, 1)
-        self.frame_layout.setStretch(1, 14)
-        self.frame_layout.setStretch(2, 3)
-        self.frame_layout.setStretch(3, 1)
+        self.frame_layout.setStretch(1, 1)
+        self.frame_layout.setStretch(2, 14)
+        self.frame_layout.setStretch(3, 3)
+        self.frame_layout.setStretch(4, 1)
 
         self.verticalLayout_2.addLayout(self.frame_layout)
 
@@ -148,6 +206,17 @@ class Ui_leads_frame(object):
     def retranslateUi(self, leads_frame):
         leads_frame.setWindowTitle(QCoreApplication.translate("leads_frame", u"Frame", None))
         self.label.setText(QCoreApplication.translate("leads_frame", u"\u0417\u0430\u044f\u0432\u043a\u0438 \u043d\u0430 \u0438\u0437\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
+        self.num_label.setText(QCoreApplication.translate("leads_frame", u"\u2116", None))
+        self.date_label.setText(QCoreApplication.translate("leads_frame", u"\u0414\u0410\u0422\u0410", None))
+        self.product_label.setText(QCoreApplication.translate("leads_frame", u"\u041f\u0420\u041e\u0414\u0423\u041a\u0426\u0418\u042f", None))
+        self.count_label.setText(QCoreApplication.translate("leads_frame", u"\u041a\u041e\u041b-\u0412\u041e \u0418\u0417\u0414\u0415\u041b\u0418\u0419", None))
+        self.type_metal_label.setText(QCoreApplication.translate("leads_frame", u"\u0422\u0418\u041f \u041c\u0415\u0422\u0410\u041b\u041b\u0410", None))
+        self.mark_steel_label.setText(QCoreApplication.translate("leads_frame", u"\u041c\u0410\u0420\u041a\u0410 \u0421\u0422\u0410\u041b\u0418", None))
+        self.diameter_label.setText(QCoreApplication.translate("leads_frame", u"\u0414\u0418\u0410\u041c\u0415\u0422\u0420, \u041c\u041c", None))
+        self.lenght_label.setText(QCoreApplication.translate("leads_frame", u"\u0414\u041b\u0418\u041d\u0410, \u041c\u041c", None))
+        self.total_weight_label.setText(QCoreApplication.translate("leads_frame", u"\u041e\u0411\u0429\u0418\u0419 \u0412\u0415\u0421(\u041a\u0413)", None))
+        self.draw_label.setText(QCoreApplication.translate("leads_frame", u"\u0427\u0415\u0420\u0422\u0415\u0416", None))
+        self.metal_balance_label.setText(QCoreApplication.translate("leads_frame", u"\u041d\u0410\u041b\u0418\u0427\u0418\u0415 \u041c\u0415\u0422\u0410\u041b\u041b\u0410", None))
         self.storage_button.setText(QCoreApplication.translate("leads_frame", u"\u0421\u043a\u043b\u0430\u0434", None))
         self.products_button.setText(QCoreApplication.translate("leads_frame", u"\u041f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044f", None))
         self.deal_button.setText(QCoreApplication.translate("leads_frame", u"\u0421\u0447\u0435\u0442\u0430", None))

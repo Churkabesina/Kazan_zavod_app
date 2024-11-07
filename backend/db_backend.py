@@ -84,7 +84,17 @@ class Database:
             ##### главный экран
             sql_table_leads = '''
                                 CREATE TABLE IF NOT EXISTS leads (
-                                id INTEGER PRIMARY KEY
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                № INTEGER NOT NULL,
+                                date TEXT NOT NULL,
+                                product TEXT NOT NULL,
+                                count INTEGER NOT NULL,
+                                type_metal TEXT NOT NULL,
+                                mark_steel TEXT,
+                                diameter TEXT,
+                                lenght REAL,
+                                total_weight REAL,
+                                draw TEXT
                                 );
                                 '''
 
@@ -144,7 +154,7 @@ class Database:
         statement = '''SELECT MAX(id) FROM temp_products'''
         self._exec_sql_statement(query, statement)
         query.next()
-        print(f'backend func select_next_id_temp_table: query.value = {query.value(0)}')
+        # print(f'backend func select_last_id_temp_table: query.value = {query.value(0)}')
         self.db.close()
         if query.value(0) == '':
             return None
@@ -155,7 +165,7 @@ class Database:
         query = QtSql.QSqlQuery()
         statement = '''DELETE FROM temp_products WHERE id = ?'''
         query.prepare(statement)
-        print(f'backend func del_temp_table_row: row_id = {row_id}')
+        # print(f'backend func del_temp_table_row: row_id = {row_id}')
         query.bindValue(0, row_id)
         self._exec_sql_statement(query)
         self.db.close()
@@ -336,10 +346,27 @@ class Database:
         self.db.close()
         return selected_data
 
+    def select_storage_table_metal_types_and_balance(self) -> dict[str, dict]:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT type_metal, size, balance_kg FROM storage'''
+        self._exec_sql_statement(query, statement)
+        selected_data = {}
+        while query.next():
+            if query.value(0) not in selected_data:
+                selected_data[query.value(0)] = {query.value(1): query.value(2)}
+            else:
+                selected_data[query.value(0)][query.value(1)] = query.value(2)
+        self.db.close()
+        return selected_data
+
     def update_storage_table_balance_kg_and_mm(self, type_metal: str, size: str | None, new_kg: float, new_mm: float | None):
         self._open_db()
         query = QtSql.QSqlQuery()
-        statement = '''UPDATE storage SET balance_kg = :kg, balance_mm = :mm WHERE type_metal = :metal and size = :size'''
+        if 'гайка' in type_metal.lower():
+            statement = '''UPDATE storage SET balance_kg = :kg, balance_mm = :mm WHERE type_metal = :metal and size is :size'''
+        else:
+            statement = '''UPDATE storage SET balance_kg = :kg, balance_mm = :mm WHERE type_metal = :metal and size = :size'''
         query.prepare(statement)
         query.bindValue(':kg', new_kg)
         query.bindValue(':mm', new_mm)
@@ -392,16 +419,48 @@ class Database:
     ### методы к таблице склада - STORAGE TABLE
 
     ### методы к таблице счетов - DEALS TABLE
-    def select_deals_table_rows(self) -> dict[str, dict]:
+    def select_deals_table_rows(self) -> list[list]:
         self._open_db()
         query = QtSql.QSqlQuery()
-        statement = '''SELECT * FROM deals'''
+        statement = '''SELECT * FROM deals ORDER BY № DESC'''
         self._exec_sql_statement(query, statement)
-        selected_data = {}
+        selected_data = []
         while query.next():
-            if query.value(1) not in selected_data:
-                selected_data[query.value(1)] = {'date': query.value(2), 'rows': [[query.value(x) for x in range(query.record().count()) if x != 1 and x != 2]]}
-            else:
-                selected_data[query.value(1)]['rows'].append([query.value(x) for x in range(query.record().count()) if x != 1 and x != 2])
+            selected_data.append([query.value(x) for x in range(query.record().count())])
+        self.db.close()
+        return selected_data
+
+    def insert_row_deals_table(self, row: list):
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''INSERT INTO deals (№, date, product, count, type_metal, mark_steel, diameter, lenght, total_weight, draw) VALUES (?,?,?,?,?,?,?,?,?,?)'''
+        query.prepare(statement)
+        for x in range(len(row)):
+            query.bindValue(x, row[x])
+        self._exec_sql_statement(query)
+        self.db.close()
+
+    def check_deal_num_exists_deals_table(self, deal_num: int) -> bool:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT 1 FROM deals WHERE № = ?'''
+        query.prepare(statement)
+        query.bindValue(0, deal_num)
+        self._exec_sql_statement(query)
+        query.next()
+        _exists = query.value(0)
+        self.db.close()
+        return bool(_exists)
+    ### методы к таблице счетов - DEALS TABLE
+
+    ### методы к таблице заявок - LEADS TABLE
+    def select_leads_table_rows(self) -> list[list]:
+        self._open_db()
+        query = QtSql.QSqlQuery()
+        statement = '''SELECT * FROM deals ORDER BY №'''
+        self._exec_sql_statement(query, statement)
+        selected_data = []
+        while query.next():
+            selected_data.append([query.value(x) for x in range(query.record().count())])
         self.db.close()
         return selected_data

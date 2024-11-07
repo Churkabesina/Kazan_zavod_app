@@ -26,7 +26,7 @@ class StorageFrame(QFrame):
         self.ui.storage_db_table.setModel(self.table_model)
         self.ui.storage_db_table.horizontalHeader().hideSection(0)
 
-        self.in_out_dialog = InOutStorageDialog(self.table_model, self.db)
+        self.in_out_dialog = InOutStorageDialog(self.main_window, self.table_model, self.db)
         self.add_metal_type_dialog = AddNewMetalTypeDialog(self.table_model, self.db, main_window, self.in_out_dialog)
 
         self.negative_delegate = NegativeNumberDelegate(self.ui.storage_db_table)
@@ -151,9 +151,10 @@ class TableModel(QAbstractTableModel):
                 return row
 
 class InOutStorageDialog(QDialog):
-    def __init__(self, model: TableModel, db: Database):
+    def __init__(self, main_window, model: TableModel, db: Database):
         super().__init__()
 
+        self.main_window = main_window
         self.model = model
         self.db = db
         self.ui = Ui_in_out_metal_storage_dialog()
@@ -212,8 +213,28 @@ class InOutStorageDialog(QDialog):
                 self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
             print('Данные обновлены!')
             self.close()
+            self.main_window.deals_frame.update_model_data()
         else:
             print('Невозможно добавить/убавить ноль')
+
+    def out_metal_from_other_frame(self, type_metal, size, out_balance):
+        type_metal = type_metal
+        size = size
+        spin_box_value = float(out_balance)
+        _id = self._metal_data[type_metal][size]
+        row = self.model.find_row_by_id(_id)
+        if 'гайка' in type_metal.lower():
+            current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
+            new_balance_kg_sht = current_balance_kg_sht - spin_box_value
+            self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
+            self.db.update_storage_table_balance_kg_and_mm(type_metal, None, new_balance_kg_sht, None)
+        else:
+            current_balance_kg_sht = float(self.model.data(self.model.index(row, 3)))
+            new_balance_kg_sht = current_balance_kg_sht - spin_box_value
+            new_balance_mm = self.balance_in_mm_formula(type_metal, size, new_balance_kg_sht)
+            self.model.setData(self.model.index(row, 3), new_balance_kg_sht)
+            self.model.setData(self.model.index(row, 4), new_balance_mm)
+            self.db.update_storage_table_balance_kg_and_mm(type_metal, size, new_balance_kg_sht, new_balance_mm)
 
     @staticmethod
     def balance_in_mm_formula(type_metal: str, size: str, kg_balance) -> float:

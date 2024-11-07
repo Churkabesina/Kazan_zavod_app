@@ -178,12 +178,12 @@ class Ui_products_frame(object):
 
         self.pdf_layout.addWidget(self.pdf_products_button)
 
-        self.pushButton = QPushButton(products_frame)
-        self.pushButton.setObjectName(u"pushButton")
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
+        self.send_to_deals_button = QPushButton(products_frame)
+        self.send_to_deals_button.setObjectName(u"send_to_deals_button")
+        sizePolicy.setHeightForWidth(self.send_to_deals_button.sizePolicy().hasHeightForWidth())
+        self.send_to_deals_button.setSizePolicy(sizePolicy)
 
-        self.pdf_layout.addWidget(self.pushButton)
+        self.pdf_layout.addWidget(self.send_to_deals_button)
 
         self.pdf_layout.setStretch(0, 5)
         self.pdf_layout.setStretch(1, 5)
@@ -221,6 +221,6 @@ class Ui_products_frame(object):
         self.clear_product_button.setText(QCoreApplication.translate("products_frame", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
         self.products_db_button.setText(QCoreApplication.translate("products_frame", u"\u0411\u0430\u0437\u0430 \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u0438", None))
         self.pdf_products_button.setText(QCoreApplication.translate("products_frame", u"\u0412\u044b\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0443\u043a\u0446\u0438\u044e \u0432 PDF", None))
-        self.pushButton.setText(QCoreApplication.translate("products_frame", u"\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
+        self.send_to_deals_button.setText(QCoreApplication.translate("products_frame", u"\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
     # retranslateUi
 
